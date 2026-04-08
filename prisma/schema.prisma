@@ -1,0 +1,56 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// භාණ්ඩ වර්ග (Electronics, Clothing, etc.)
+model Category {
+  id       String    @id @default(cuid())
+  name     String    @unique
+  products Product[]
+}
+
+// විකුණන භාණ්ඩ
+model Product {
+  id          String   @id @default(cuid())
+  name        String
+  description String
+  price       Float
+  image       String?
+  category    Category @relation(fields: [categoryId], references: [id])
+  categoryId  String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model User {
+  id        String   @id @default(cuid())
+  name      String?
+  email     String   @unique
+  password  String
+  role      Role     @default(USER)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+model Size {
+  id        Int      @id @default(autoincrement())
+  sizeCode  String   @unique
+  sizeName  String
+  createdAt DateTime @default(now())
+}
+model Color {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  hexCode   String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
