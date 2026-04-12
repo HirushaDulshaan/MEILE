@@ -1,217 +1,365 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { Loader2, Save, Upload, X, RefreshCw, Edit3 } from "lucide-react";
 
 export default function AddProductPage() {
+    // 1. Form States
     const [formData, setFormData] = useState({
-        section: "",
-        category: "",
+        id: null as number | null, // Dan ID eka Number | null
+        sectionId: "",
+        categoryId: "",
         title: "",
         price: "",
-        colors: "",
         description: "",
-        images: ["", "", ""],
+        colorIds: [] as number[], // IDs dan Numbers
     });
 
     const [stockData, setStockData] = useState({
-        product: "",
-        status: "",
-        size: "",
+        productId: "",
+        status: "Active",
+        sizeId: "",
         qty: "",
     });
 
-    const categories: Record<string, string[]> = {
-        Electronics: ["Phones", "Laptops", "Accessories"],
-        Clothing: ["Men", "Women", "Kids"],
-        Shoes: ["Sports", "Casual"],
+    // 2. Data States
+    const [sections, setSections] = useState<any[]>([]);
+    const [categories, setCategories] = useState<any[]>([]);
+    const [dbColors, setDbColors] = useState<any[]>([]);
+    const [dbSizes, setDbSizes] = useState<any[]>([]);
+    const [allProducts, setAllProducts] = useState<any[]>([]);
+    const [previews, setPreviews] = useState<string[]>([]);
+    const [isLoading, setIsLoading] = useState(false);
+    const [isStockLoading, setIsStockLoading] = useState(false);
+    const [isEditMode, setIsEditMode] = useState(false);
+
+    // 3. Initial Data Load
+    const loadInitialData = async () => {
+        try {
+            const [secRes, colRes, sizeRes, prodRes] = await Promise.all([
+                fetch("/api/sections"),
+                fetch("/api/color"),
+                fetch("/api/size"),
+                fetch("/api/products")
+            ]);
+            setSections(await secRes.json());
+            setDbColors(await colRes.json());
+            setDbSizes(await sizeRes.json());
+            setAllProducts(await prodRes.json());
+        } catch (error) {
+            console.error("Error loading data", error);
+        }
     };
 
-    const colorOptions = ["Black", "White", "Navy Blue", "Red", "Grey"];
-    const statusOptions = ["Active", "Out of Stock", "Discontinued"];
-    const sizeOptions = ["XS", "S", "M", "L", "XL", "UK 7", "UK 8", "UK 9"];
+    useEffect(() => {
+        loadInitialData();
+    }, []);
 
-    const handleProductChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+    // Filter Categories by Section
+    useEffect(() => {
+        if (formData.sectionId) {
+            fetch(`/api/category?sectionId=${formData.sectionId}`)
+                .then(res => res.json())
+                .then(data => setCategories(data));
+        }
+    }, [formData.sectionId]);
+
+    // --- PRODUCT SELECTION LOGIC ---
+    const handleProductSelect = (productId: string) => {
+        if (productId === "new") {
+            resetForm();
+            return;
+        }
+
+        const selected = allProducts.find(p => p.id === Number(productId));
+        if (selected) {
+            setIsEditMode(true);
+            setFormData({
+                id: selected.id,
+                sectionId: selected.sectionId.toString(),
+                categoryId: selected.categoryId.toString(),
+                title: selected.name,
+                price: selected.price.toString(),
+                description: selected.description,
+                colorIds: selected.colors.map((c: any) => c.id),
+            });
+            setPreviews(selected.images.map((img: any) => img.url));
+            setStockData(prev => ({ ...prev, productId: selected.id.toString() }));
+        }
+    };
+
+    const resetForm = () => {
+        setIsEditMode(false);
+        setFormData({ id: null, sectionId: "", categoryId: "", title: "", price: "", description: "", colorIds: [] });
+        setPreviews([]);
+    };
+
+    const handleProductChange = (e: any) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
-    const handleStockChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const handleStockChange = (e: any) => {
         setStockData({ ...stockData, [e.target.name]: e.target.value });
+    };
+
+    // 4. Image Handle (Max 3)
+    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const files = Array.from(e.target.files || []);
+        if (previews.length + files.length > 3) {
+            alert("Maximum 3 images only!");
+            return;
+        }
+        files.forEach(file => {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setPreviews(prev => [...prev, reader.result as string]);
+            };
+            reader.readAsDataURL(file);
+        });
+    };
+
+    const removeImage = (index: number) => {
+        setPreviews(prev => prev.filter((_, i) => i !== index));
+    };
+
+    // 5. Save / Update Product Logic
+    const handleSaveProduct = async () => {
+        if (!formData.title || !formData.price || previews.length === 0) {
+            alert("Please fill required fields!");
+            return;
+        }
+
+        setIsLoading(true);
+        try {
+            const finalImageUrls = [];
+            for (const img of previews) {
+                if (img.startsWith("data:image")) {
+                    const res = await fetch("/api/upload", {
+                        method: "POST",
+                        body: JSON.stringify({ imageBase64: img }),
+                    });
+                    const data = await res.json();
+                    finalImageUrls.push(data.url);
+                } else {
+                    finalImageUrls.push(img);
+                }
+            }
+
+            const method = isEditMode ? "PUT" : "POST";
+            const response = await fetch("/api/products", {
+                method: method,
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    id: formData.id,
+                    name: formData.title,
+                    description: formData.description,
+                    price: formData.price,
+                    categoryId: formData.categoryId,
+                    sectionId: formData.sectionId,
+                    images: finalImageUrls,
+                    colorIds: formData.colorIds,
+                }),
+            });
+
+            if (response.ok) {
+                alert(isEditMode ? "✅ Product updated!" : "✅ Product saved!");
+                loadInitialData();
+                resetForm();
+            }
+        } catch (error) {
+            alert("❌ Error saving product");
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    // 6. Save Stock Logic
+    const handleUpdateStock = async () => {
+        if (!stockData.productId || !stockData.sizeId || !stockData.qty) {
+            alert("Please select product, size and quantity!");
+            return;
+        }
+        setIsStockLoading(true);
+        try {
+            const res = await fetch("/api/stocks", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    ...stockData,
+                    productId: Number(stockData.productId),
+                    sizeId: Number(stockData.sizeId),
+                    qty: Number(stockData.qty)
+                }),
+            });
+            if (res.ok) {
+                alert("✅ Inventory Updated!");
+                setStockData(prev => ({ ...prev, sizeId: "", qty: "" }));
+            }
+        } catch (e) {
+            alert("❌ Error updating inventory");
+        } finally {
+            setIsStockLoading(false);
+        }
     };
 
     return (
         <div className="min-h-screen bg-[#F8FAFC] p-6 lg:p-12 text-slate-900">
             <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8">
 
-                {/* LEFT: Product Creation (8 Columns) */}
+                {/* LEFT: Product Creation */}
                 <div className="lg:col-span-8 space-y-6">
-                    <header>
-                        <h1 className="text-3xl font-extrabold tracking-tight">Create Product</h1>
-                        <p className="text-slate-500">Fill in the details to list a new item in your store.</p>
+                    <header className="flex justify-between items-end">
+                        <div>
+                            <h1 className="text-4xl font-black tracking-tight uppercase">
+                                {isEditMode ? "Edit Product" : "Create Product"}
+                            </h1>
+                            <p className="text-slate-500 font-medium">Manage your product details and media.</p>
+                        </div>
+                        {isEditMode && (
+                            <button onClick={resetForm} className="text-xs bg-slate-200 hover:bg-slate-300 px-4 py-2 rounded-lg font-bold transition-all">
+                                CREATE NEW INSTEAD
+                            </button>
+                        )}
                     </header>
 
-                    <div className="bg-white border border-slate-200 rounded-2xl p-8 shadow-sm">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            {/* 1. Section */}
-                            <div className="flex flex-col gap-2">
-                                <label className="text-sm font-bold text-slate-700">Select Section</label>
-                                <select
-                                    name="section"
-                                    value={formData.section}
-                                    onChange={(e) => {
-                                        handleProductChange(e);
-                                        setFormData(prev => ({ ...prev, section: e.target.value, category: "" }));
-                                    }}
-                                    className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-600 outline-none transition-all"
-                                >
-                                    <option value="">Choose Section...</option>
-                                    {Object.keys(categories).map((sec) => <option key={sec} value={sec}>{sec}</option>)}
-                                </select>
-                            </div>
+                    <div className="bg-white border border-slate-200 rounded-[2.5rem] p-10 shadow-sm">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
 
-                            {/* 2. Category */}
-                            <div className="flex flex-col gap-2">
-                                <label className="text-sm font-bold text-slate-700">Select Category</label>
-                                <select
-                                    name="category"
-                                    disabled={!formData.section}
-                                    value={formData.category}
-                                    onChange={handleProductChange}
-                                    className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-600 outline-none disabled:bg-slate-100 disabled:cursor-not-allowed"
-                                >
-                                    <option value="">Choose Category...</option>
-                                    {formData.section && categories[formData.section].map((cat) => (
-                                        <option key={cat} value={cat}>{cat}</option>
-                                    ))}
-                                </select>
-                            </div>
-
-                            {/* 3. Title (Full Width) */}
+                            {/* Product Selector / Title Dropdown */}
                             <div className="md:col-span-2 flex flex-col gap-2">
-                                <label className="text-sm font-bold text-slate-700">Product Title</label>
-                                <input
-                                    name="title"
-                                    placeholder="Enter product name"
-                                    onChange={handleProductChange}
-                                    className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-600 outline-none"
-                                />
-                            </div>
-
-                            {/* 4. Price */}
-                            <div className="flex flex-col gap-2">
-                                <label className="text-sm font-bold text-slate-700">Price</label>
-                                <div className="relative">
-                                    <span className="absolute left-3 top-3 text-slate-400">Rs.</span>
-                                    <input
-                                        name="price"
-                                        type="number"
-                                        placeholder="0.00"
-                                        onChange={handleProductChange}
-                                        className="w-full p-3 pl-10 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-600 outline-none"
-                                    />
+                                <label className="text-sm font-bold text-slate-700 ml-1">Product Title / Select Existing</label>
+                                <div className="relative group">
+                                    <select
+                                        className="w-full p-4 bg-blue-50/50 border border-blue-100 rounded-2xl outline-none appearance-none font-bold text-blue-900"
+                                        onChange={(e) => handleProductSelect(e.target.value)}
+                                        value={isEditMode ? (formData.id?.toString() || "new") : "new"}
+                                    >
+                                        <option value="new">+ Create New Product</option>
+                                        {allProducts.map(p => (
+                                            <option key={p.id} value={p.id}>{p.name} (LKR {p.price})</option>
+                                        ))}
+                                    </select>
+                                    <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
+                                        <Edit3 size={18} className="text-blue-400" />
+                                    </div>
                                 </div>
                             </div>
 
-                            {/* 5. Colors (Dropdown) */}
                             <div className="flex flex-col gap-2">
-                                <label className="text-sm font-bold text-slate-700">Primary Color</label>
-                                <select
-                                    name="colors"
-                                    onChange={handleProductChange}
-                                    className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-600 outline-none"
-                                >
-                                    <option value="">Select Color...</option>
-                                    {colorOptions.map(c => <option key={c} value={c}>{c}</option>)}
+                                <label className="text-sm font-bold text-slate-700 ml-1">Section</label>
+                                <select name="sectionId" value={formData.sectionId} onChange={handleProductChange} className="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl outline-none">
+                                    <option value="">Choose Section...</option>
+                                    {sections.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
                                 </select>
                             </div>
 
-                            {/* 6. Description (Full Width) */}
-                            <div className="md:col-span-2 flex flex-col gap-2">
-                                <label className="text-sm font-bold text-slate-700">Description</label>
-                                <textarea
-                                    name="description"
-                                    rows={4}
-                                    placeholder="Write something about this product..."
-                                    onChange={handleProductChange}
-                                    className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-600 outline-none resize-none"
-                                />
+                            <div className="flex flex-col gap-2">
+                                <label className="text-sm font-bold text-slate-700 ml-1">Category</label>
+                                <select name="categoryId" disabled={!formData.sectionId} value={formData.categoryId} onChange={handleProductChange} className="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl outline-none disabled:opacity-50">
+                                    <option value="">Choose Category...</option>
+                                    {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+                                </select>
                             </div>
 
-                            {/* 7. Image URLs */}
+                            {/* Title (for new entry) */}
                             <div className="md:col-span-2 flex flex-col gap-2">
-                                <label className="text-sm font-bold text-slate-700 text-slate-400 uppercase tracking-widest text-[10px]">Image Gallery</label>
-                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                    {[0, 1, 2].map((i) => (
-                                        <input
-                                            key={i}
-                                            placeholder={`Image URL ${i + 1}`}
-                                            className="p-3 bg-white border border-slate-200 rounded-xl text-xs focus:border-blue-600 outline-none shadow-sm"
-                                        />
+                                <label className="text-sm font-bold text-slate-700 ml-1">Display Name</label>
+                                <input name="title" value={formData.title} onChange={handleProductChange} className="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl outline-none" placeholder="Enter title..."/>
+                            </div>
+
+                            <div className="flex flex-col gap-2">
+                                <label className="text-sm font-bold text-slate-700 ml-1">Price (LKR)</label>
+                                <input name="price" type="number" value={formData.price} onChange={handleProductChange} className="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl outline-none" placeholder="0.00"/>
+                            </div>
+
+                            <div className="flex flex-col gap-2">
+                                <label className="text-sm font-bold text-slate-700 ml-1">Color</label>
+                                <select
+                                    name="colorIds"
+                                    value={formData.colorIds[0] || ""}
+                                    onChange={(e) => setFormData({...formData, colorIds: [Number(e.target.value)]})}
+                                    className="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl outline-none"
+                                >
+                                    <option value="">Select Color...</option>
+                                    {dbColors.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+                                </select>
+                            </div>
+
+                            <div className="md:col-span-2 flex flex-col gap-2">
+                                <label className="text-sm font-bold text-slate-700 ml-1">Description</label>
+                                <textarea name="description" rows={3} value={formData.description} onChange={handleProductChange} className="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl outline-none resize-none" placeholder="Description..."/>
+                            </div>
+
+                            <div className="md:col-span-2 space-y-4">
+                                <label className="text-xs font-black text-slate-400 uppercase tracking-widest">Gallery (Max 3)</label>
+                                <div className="grid grid-cols-3 gap-4">
+                                    {previews.map((src, i) => (
+                                        <div key={i} className="relative aspect-square rounded-2xl overflow-hidden border border-slate-200">
+                                            <img src={src} className="object-cover w-full h-full" alt="preview" />
+                                            <button onClick={() => removeImage(i)} className="absolute top-1 right-1 p-1 bg-white/80 rounded-full text-red-500"><X size={14}/></button>
+                                        </div>
                                     ))}
+                                    {previews.length < 3 && (
+                                        <label className="flex flex-col items-center justify-center aspect-square border-2 border-dashed border-slate-200 rounded-2xl cursor-pointer hover:bg-slate-50 transition">
+                                            <Upload className="text-slate-400" />
+                                            <input type="file" multiple className="hidden" accept="image/*" onChange={handleImageChange} />
+                                        </label>
+                                    )}
                                 </div>
                             </div>
                         </div>
 
-                        <button className="mt-8 w-full bg-slate-900 text-white font-bold py-4 rounded-xl hover:bg-black transition-all shadow-xl active:scale-[0.99]">
-                            Save New Product
+                        <button
+                            onClick={handleSaveProduct}
+                            disabled={isLoading}
+                            className={`mt-10 w-full text-white font-bold py-5 rounded-[1.5rem] flex items-center justify-center gap-3 active:scale-95 transition-all shadow-xl ${isEditMode ? 'bg-blue-600 hover:bg-blue-700' : 'bg-slate-900 hover:bg-black'}`}
+                        >
+                            {isLoading ? <Loader2 className="animate-spin" /> : <Save size={20} />}
+                            {isLoading ? "Processing..." : isEditMode ? "Update Product Details" : "Save New Product"}
                         </button>
                     </div>
                 </div>
 
-                {/* RIGHT: Stock Management (4 Columns) */}
-                <div className="lg:col-span-4 flex flex-col gap-6">
+                {/* RIGHT: Stock Management */}
+                <div className="lg:col-span-4 space-y-6">
                     <h2 className="text-2xl font-bold text-slate-800">Stock Management</h2>
-
-                    <div className="bg-[#1E293B] text-white p-8 rounded-[2rem] shadow-2xl border border-slate-700">
-                        <div className="space-y-6">
-                            <div className="flex flex-col gap-2">
-                                <label className="text-xs font-semibold text-slate-400 uppercase">Target Product</label>
-                                <select name="product" onChange={handleStockChange} className="w-full p-3 bg-slate-800 border border-slate-700 rounded-xl text-white focus:ring-2 focus:ring-emerald-500 outline-none">
-                                    <option value="">Select Product...</option>
-                                    <option>SmartStyle Cotton Tee</option>
-                                    <option>Denim Jacket V2</option>
-                                </select>
-                            </div>
-
-                            <div className="flex flex-col gap-2">
-                                <label className="text-xs font-semibold text-slate-400 uppercase">Inventory Status</label>
-                                <select name="status" onChange={handleStockChange} className="w-full p-3 bg-slate-800 border border-slate-700 rounded-xl text-white focus:ring-2 focus:ring-emerald-500 outline-none">
-                                    <option value="">Select Status...</option>
-                                    {statusOptions.map(s => <option key={s} value={s}>{s}</option>)}
-                                </select>
-                            </div>
-
-                            <div className="flex flex-col gap-2">
-                                <label className="text-xs font-semibold text-slate-400 uppercase">Size Variant</label>
-                                <select name="size" onChange={handleStockChange} className="w-full p-3 bg-slate-800 border border-slate-700 rounded-xl text-white focus:ring-2 focus:ring-emerald-500 outline-none">
-                                    <option value="">Select Size...</option>
-                                    {sizeOptions.map(s => <option key={s} value={s}>{s}</option>)}
-                                </select>
-                            </div>
-
-                            <div className="flex flex-col gap-2">
-                                <label className="text-xs font-semibold text-slate-400 uppercase">Quantity In Hand</label>
-                                <input
-                                    name="qty"
-                                    type="number"
-                                    placeholder="0"
-                                    onChange={handleStockChange}
-                                    className="w-full p-3 bg-slate-800 border border-slate-700 rounded-xl text-white focus:ring-2 focus:ring-emerald-500 outline-none"
-                                />
-                            </div>
-
-                            <button className="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black py-4 rounded-2xl shadow-lg shadow-emerald-900/20 transition-all mt-4 uppercase tracking-wider">
-                                Update Inventory
-                            </button>
+                    <div className="bg-[#1E293B] text-white p-8 rounded-[2.5rem] shadow-2xl border border-slate-700 space-y-6">
+                        <div className="flex flex-col gap-2">
+                            <label className="text-xs font-semibold text-slate-400 uppercase">Target Product</label>
+                            <select
+                                name="productId"
+                                value={stockData.productId}
+                                onChange={handleStockChange}
+                                className="w-full p-4 bg-slate-800 border border-slate-700 rounded-2xl outline-none"
+                            >
+                                <option value="">Select Product...</option>
+                                {allProducts.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
+                            </select>
                         </div>
-                    </div>
-
-                    {/* Quick Tip for your Portfolio */}
-                    <div className="p-6 bg-blue-50 border border-blue-100 rounded-2xl">
-                        <p className="text-sm text-blue-700 leading-relaxed">
-                            💡 <strong>Tip:</strong> In a real Next.js app, you can use <strong>Server Actions</strong> to handle these form submissions directly to your database.
-                        </p>
+                        <div className="flex flex-col gap-2">
+                            <label className="text-xs font-semibold text-slate-400 uppercase">Inventory Status</label>
+                            <select name="status" value={stockData.status} onChange={handleStockChange} className="w-full p-4 bg-slate-800 border border-slate-700 rounded-2xl outline-none">
+                                <option value="Active">Active</option>
+                                <option value="Out of Stock">Out of Stock</option>
+                                <option value="Discontinued">Discontinued</option>
+                            </select>
+                        </div>
+                        <div className="flex flex-col gap-2">
+                            <label className="text-xs font-semibold text-slate-400 uppercase">Size Variant</label>
+                            <select name="sizeId" value={stockData.sizeId} onChange={handleStockChange} className="w-full p-4 bg-slate-800 border border-slate-700 rounded-2xl outline-none">
+                                <option value="">Select Size...</option>
+                                {dbSizes.map(s => <option key={s.id} value={s.id}>{s.sizeName}</option>)}
+                            </select>
+                        </div>
+                        <div className="flex flex-col gap-2">
+                            <label className="text-xs font-semibold text-slate-400 uppercase">Quantity</label>
+                            <input name="qty" type="number" value={stockData.qty} onChange={handleStockChange} placeholder="0" className="w-full p-4 bg-slate-800 border border-slate-700 rounded-2xl outline-none"/>
+                        </div>
+                        <button onClick={handleUpdateStock} disabled={isStockLoading} className="w-full bg-emerald-500 text-slate-950 font-black py-5 rounded-[1.5rem] uppercase flex items-center justify-center gap-2">
+                            {isStockLoading && <Loader2 size={18} className="animate-spin" />}
+                            Update Inventory
+                        </button>
                     </div>
                 </div>
-
             </div>
         </div>
     );
