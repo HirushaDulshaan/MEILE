@@ -6,28 +6,9 @@ datasource db {
   provider = "postgresql"
 }
 
-// භාණ්ඩ වර්ග (Electronics, Clothing, etc.)
-model Category {
-  id       String    @id @default(cuid())
-  name     String    @unique
-  products Product[]
-}
-
-// විකුණන භාණ්ඩ
-model Product {
-  id          String   @id @default(cuid())
-  name        String
-  description String
-  price       Float
-  image       String?
-  category    Category @relation(fields: [categoryId], references: [id])
-  categoryId  String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-}
-
+// --- User Management ---
 model User {
-  id        String   @id @default(cuid())
+  id        Int      @id @default(autoincrement())
   name      String?
   email     String   @unique
   password  String
@@ -41,16 +22,89 @@ enum Role {
   ADMIN
 }
 
-model Size {
-  id        Int      @id @default(autoincrement())
-  sizeCode  String   @unique
-  sizeName  String
-  createdAt DateTime @default(now())
+// --- Catalog Structure ---
+model Section {
+  id         Int        @id @default(autoincrement())
+  name       String     @unique
+  categories Category[]
+  products   Product[]
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
 }
+
+model Category {
+  id        Int       @id @default(autoincrement())
+  name      String
+  section   Section   @relation(fields: [sectionId], references: [id])
+  sectionId Int       // String thibbe, Int kala
+  products  Product[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+// --- Product Core ---
+model Product {
+  id          Int            @id @default(autoincrement())
+  name        String
+  description String
+  price       Float
+
+  // Relationships
+  category    Category       @relation(fields: [categoryId], references: [id])
+  categoryId  Int            // String thibbe, Int kala
+  section     Section        @relation(fields: [sectionId], references: [id])
+  sectionId   Int            // String thibbe, Int kala
+
+  // One-to-Many: Images
+  images      ProductImage[]
+
+  // Many-to-Many: Colors & Sizes
+  colors      Color[]
+  sizes       Size[]
+
+  // One-to-Many: Stock records
+  stocks      Stock[]
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+}
+
+model ProductImage {
+  id        Int      @id @default(autoincrement())
+  url       String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId Int      // String thibbe, Int kala
+}
+
+// --- Attributes ---
 model Color {
-  id        String   @id @default(cuid())
-  name      String   @unique
-  hexCode   String   @unique
+  id        Int       @id @default(autoincrement())
+  name      String    @unique
+  hexCode   String    @unique
+  products  Product[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Size {
+  id        Int       @id @default(autoincrement())
+  sizeCode  String    @unique
+  sizeName  String
+  products  Product[]
+  stocks    Stock[]
+  createdAt DateTime  @default(now())
+}
+
+// --- Inventory Management ---
+model Stock {
+  id        Int      @id @default(autoincrement())
+  productId Int      // String thibbe, Int kala
+  product   Product  @relation(fields: [productId], references: [id])
+  sizeId    Int      // String thibbe, Int kala
+  size      Size     @relation(fields: [sizeId], references: [id])
+  qty       Int      @default(0)
+  status    String   // e.g., "Active", "Out of Stock", "Low Stock"
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-}
+
+  @@unique([productId, sizeId])
+}// Product model ekatath 'stocks Stock[]' kalla add karanna amathaka karanna epa

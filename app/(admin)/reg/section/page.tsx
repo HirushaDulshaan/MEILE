@@ -1,27 +1,61 @@
 "use client";
-import { useState } from "react";
-import { Layers, Save, Edit, RotateCcw } from "lucide-react";
+import { FormEvent, useEffect, useState } from "react";
+import { Layers, Save, Edit, RotateCcw, Loader2 } from "lucide-react";
 
 export default function SectionManagement() {
     const [formData, setFormData] = useState({
-        id: null as number | null,
+        id: null as number | null, // Dan ID eka Number
         sectionName: "",
     });
 
     const [isEditing, setIsEditing] = useState(false);
+    const [savedSections, setSavedSections] = useState<any[]>([]);
+    const [isLoading, setIsLoading] = useState(false);
 
-    // Table එකට Dummy Data (පස්සේ Spring Boot එකෙන් fetch කරන්න)
-    const [savedSections, setSavedSections] = useState([
-        { id: 1, name: "Electronics" },
-        { id: 2, name: "Clothing" },
-        { id: 3, name: "Shoes" },
-    ]);
-
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setFormData({ ...formData, sectionName: e.target.value });
+    const fetchSections = async () => {
+        try {
+            const res = await fetch("/api/sections");
+            if (!res.ok) throw new Error("Failed to fetch");
+            const data = await res.json();
+            setSavedSections(Array.isArray(data) ? data : []);
+        } catch (error) {
+            console.error("Failed to fetch sections:", error);
+        }
     };
 
-    // Edit Button එක click කළ විට
+    useEffect(() => { fetchSections(); }, []);
+
+    const handleSubmit = async (e: FormEvent) => {
+        e.preventDefault();
+        if (!formData.sectionName.trim()) return alert("Please enter a name");
+
+        setIsLoading(true);
+        try {
+            const method = isEditing ? "PUT" : "POST";
+            const response = await fetch("/api/sections", {
+                method: method,
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(formData),
+            });
+
+            if (response.ok) {
+                await fetchSections();
+                resetForm();
+            } else {
+                alert("Something went wrong!");
+            }
+        } catch (error) {
+            console.error(error);
+            alert("Something went wrong!");
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setFormData({ ...formData, [e.target.name]: e.target.value });
+    };
+
     const handleEdit = (item: any) => {
         setIsEditing(true);
         setFormData({
@@ -30,106 +64,68 @@ export default function SectionManagement() {
         });
     };
 
-    // Form එක reset කිරීමට
     const resetForm = () => {
         setIsEditing(false);
         setFormData({ id: null, sectionName: "" });
     };
 
     return (
-        <div className="min-h-screen bg-[#F8FAFC] p-4 md:p-10 text-slate-900">
+        <div className="min-h-screen bg-[#F8FAFC] p-4 md:p-10 text-slate-900 font-sans">
             <div className="max-w-6xl mx-auto">
-
-                {/* PAGE HEADER */}
-                <header className="mb-10 text-center lg:text-left">
-                    <h1 className="text-3xl font-black tracking-tight text-slate-900 uppercase">
-                        Section Management
-                    </h1>
-                    <p className="text-slate-500 mt-1">Add and manage main store sections for SmartStyle</p>
+                <header className="mb-10 flex items-center gap-4">
+                    <div className="bg-indigo-600 p-3 rounded-2xl shadow-lg text-white">
+                        <Layers size={28} />
+                    </div>
+                    <div>
+                        <h1 className="text-3xl font-black uppercase tracking-tight">Sections</h1>
+                        <p className="text-slate-500 font-medium">Manage main store categories</p>
+                    </div>
                 </header>
 
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-
-                    {/* LEFT SIDE: New Section Form (5 Columns) */}
+                    {/* FORM */}
                     <div className="lg:col-span-5">
                         <div className="bg-white rounded-[2.5rem] shadow-xl border border-slate-100 p-8 sticky top-10">
-                            <div className="text-center mb-8 relative">
-                                {isEditing && (
-                                    <button
-                                        onClick={resetForm}
-                                        className="absolute right-0 top-0 p-2 text-slate-400 hover:text-blue-600 transition"
-                                        title="Cancel Edit"
-                                    >
-                                        <RotateCcw size={20} />
-                                    </button>
-                                )}
-                                <div className="bg-indigo-50 w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-4 text-indigo-600">
-                                    <Layers size={28} />
+                            <form onSubmit={handleSubmit} className="space-y-6">
+                                <div className="text-center relative">
+                                    {isEditing && (
+                                        <button type="button" onClick={resetForm} className="absolute right-0 top-0 p-2 text-slate-400 hover:text-indigo-600 transition">
+                                            <RotateCcw size={20} />
+                                        </button>
+                                    )}
+                                    <h2 className="text-2xl font-bold">{isEditing ? "Update" : "New Section"}</h2>
                                 </div>
-                                <h2 className="text-2xl font-bold text-slate-800">
-                                    {isEditing ? "Update Section" : "New Section"}
-                                </h2>
-                            </div>
-
-                            <form onSubmit={(e) => e.preventDefault()} className="space-y-6">
                                 <div className="flex flex-col gap-2">
-                                    <label className="text-sm font-bold text-slate-700 ml-1">Section Name</label>
-                                    <input
-                                        name="sectionName"
-                                        type="text"
-                                        value={formData.sectionName}
-                                        placeholder="e.g. Men's Fashion"
-                                        onChange={handleChange}
-                                        className="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-indigo-600 outline-none transition-all"
-                                    />
+                                    <label className="text-xs font-bold text-slate-500 ml-1 uppercase">Section Name</label>
+                                    <input name="sectionName" required value={formData.sectionName} onChange={handleChange} className="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-indigo-600 outline-none" placeholder="e.g. Mens Fashion"/>
                                 </div>
-
-                                <button className={`w-full text-white font-bold py-4 rounded-2xl shadow-lg transition-all active:scale-[0.98] flex items-center justify-center gap-3 ${isEditing ? 'bg-indigo-600 hover:bg-indigo-700 shadow-indigo-200' : 'bg-slate-900 hover:bg-black shadow-slate-200'}`}>
-                                    <Save size={20} />
-                                    {isEditing ? "Update Section" : "Save Section"}
+                                <button disabled={isLoading} className={`w-full text-white font-bold py-4 rounded-2xl shadow-lg flex items-center justify-center gap-3 transition-all ${isEditing ? 'bg-indigo-600' : 'bg-slate-900'}`}>
+                                    {isLoading ? <Loader2 className="animate-spin" /> : <Save size={20} />}
+                                    {isEditing ? "Update Changes" : "Save Section"}
                                 </button>
                             </form>
                         </div>
                     </div>
 
-                    {/* RIGHT SIDE: Sections Table (7 Columns) */}
-                    <div className="lg:col-span-7 bg-white rounded-[2.5rem] shadow-sm border border-slate-200 overflow-hidden h-fit">
-                        <div className="p-8 border-b border-slate-100 flex justify-between items-center">
-                            <h2 className="text-xl font-bold flex items-center gap-3 text-slate-800">
-                                <span className="w-2 h-6 bg-indigo-600 rounded-full"></span>
-                                Available Sections
-                            </h2>
-                            <span className="text-xs font-bold bg-indigo-50 px-4 py-1.5 rounded-full text-indigo-600 border border-indigo-100">
-                                {savedSections.length} Total
-                            </span>
-                        </div>
-
+                    {/* TABLE */}
+                    <div className="lg:col-span-7 bg-white rounded-[2.5rem] border border-slate-200 overflow-hidden shadow-sm h-fit">
                         <div className="overflow-x-auto">
                             <table className="w-full text-left">
-                                <thead>
-                                <tr className="bg-slate-50/50 text-slate-400 uppercase text-[10px] tracking-[0.2em] font-black border-b border-slate-100">
+                                <thead className="bg-slate-50/50 border-b border-slate-100">
+                                <tr className="text-slate-400 uppercase text-[10px] tracking-widest font-black">
                                     <th className="px-8 py-5">ID</th>
-                                    <th className="px-8 py-5">Section Name</th>
+                                    <th className="px-8 py-5">Name</th>
                                     <th className="px-8 py-5 text-right">Action</th>
                                 </tr>
                                 </thead>
-                                <tbody className="divide-y divide-slate-50">
+                                <tbody className="divide-y divide-slate-50 text-sm">
                                 {savedSections.map((item) => (
-                                    <tr key={item.id} className="group hover:bg-indigo-50/30 transition-colors">
-                                        <td className="px-8 py-5">
-                                                <span className="text-xs font-mono font-bold text-slate-400 bg-slate-100 px-2 py-1 rounded">
-                                                    #{item.id.toString().padStart(3, '0')}
-                                                </span>
-                                        </td>
-                                        <td className="px-8 py-5 font-bold text-slate-700 tracking-tight">
-                                            {item.name}
-                                        </td>
+                                    <tr key={item.id} className="group hover:bg-indigo-50/20 transition-colors font-medium text-slate-700">
+                                        <td className="px-8 py-5 font-mono text-xs text-slate-400 font-bold">#{item.id}</td>
+                                        <td className="px-8 py-5 font-bold">{item.name}</td>
                                         <td className="px-8 py-5 text-right">
-                                            <button
-                                                onClick={() => handleEdit(item)}
-                                                className="p-3 bg-white border border-slate-200 rounded-xl text-slate-400 hover:text-indigo-600 hover:border-indigo-200 hover:shadow-md transition-all active:scale-90"
-                                            >
-                                                <Edit size={18} />
+                                            <button onClick={() => handleEdit(item)} className="p-2 bg-white border border-slate-200 rounded-lg text-slate-400 hover:text-indigo-600 transition-all shadow-sm">
+                                                <Edit size={16} />
                                             </button>
                                         </td>
                                     </tr>
@@ -138,7 +134,6 @@ export default function SectionManagement() {
                             </table>
                         </div>
                     </div>
-
                 </div>
             </div>
         </div>

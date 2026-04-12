@@ -12,19 +12,19 @@ const AdminNavbar = () => {
                 <div className="max-w-7xl mx-auto flex justify-between items-center">
 
                     {/* Logo */}
-                    <Link href="/admin" className="text-2xl font-black hover:text-gray-300 transition">
+                    <Link href="/dashboard" className="text-2xl font-black hover:text-gray-300 transition">
                         D E E S <span className="text-[10px] tracking-normal font-light bg-white text-black px-2 py-0.5 ml-2 rounded">ADMIN</span>
                     </Link>
 
                     {/* Desktop Links */}
                     <div className="hidden md:flex items-center gap-10 text-[13px] font-bold">
-                        <Link href="/admin/products" className="flex items-center gap-2 hover:text-gray-400 transition">
+                        <Link href="/products" className="flex items-center gap-2 hover:text-gray-400 transition">
                             <Package size={16} /> Products
                         </Link>
-                        <Link href="/admin/users" className="flex items-center gap-2 hover:text-gray-400 transition">
+                        <Link href="/users" className="flex items-center gap-2 hover:text-gray-400 transition">
                             <Users size={16} /> Users
                         </Link>
-                        <Link href="/admin/orders" className="flex items-center gap-2 hover:text-gray-400 transition">
+                        <Link href="/orders" className="flex items-center gap-2 hover:text-gray-400 transition">
                             <ShoppingBag size={16} /> Orders
                         </Link>
 

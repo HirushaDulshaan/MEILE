@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react"; // 👈 useEffect එකතු කළා
+import { useState, useEffect } from "react";
 import { Ruler, Save, Edit, RotateCcw, Type, Loader2 } from "lucide-react";
 
 export default function SizeManagement() {
@@ -9,26 +9,22 @@ export default function SizeManagement() {
         sizeName: "",
     });
 
-    const [savedSizes, setSavedSizes] = useState<any[]>([]); // Table එකේ data
+    const [savedSizes, setSavedSizes] = useState<any[]>([]);
     const [isEditing, setIsEditing] = useState(false);
-    const [isLoading, setIsLoading] = useState(false); // Button loading state එකට
+    const [isLoading, setIsLoading] = useState(false);
 
-    // --- 1. Database එකෙන් Data Load කිරීම ---
     const fetchSizes = async () => {
         try {
             const res = await fetch("/api/size");
             const data = await res.json();
-            setSavedSizes(data);
+            setSavedSizes(Array.isArray(data) ? data : []);
         } catch (error) {
             console.error("Failed to fetch sizes", error);
         }
     };
 
-    useEffect(() => {
-        fetchSizes();
-    }, []);
+    useEffect(() => { fetchSizes(); }, []);
 
-    // --- 2. Save හෝ Update කිරීම ---
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsLoading(true);
@@ -42,10 +38,11 @@ export default function SizeManagement() {
             });
 
             if (response.ok) {
-                fetchSizes(); // Table එක refresh කරන්න
+                await fetchSizes();
                 resetForm();
             } else {
-                alert("Something went wrong!");
+                const err = await response.json();
+                alert(err.error || "Something went wrong!");
             }
         } catch (error) {
             console.error("Error saving size", error);
@@ -62,8 +59,8 @@ export default function SizeManagement() {
         setIsEditing(true);
         setFormData({
             id: item.id,
-            sizeCode: item.sizeCode, // 👈 API එකෙන් එන නම sizeCode
-            sizeName: item.sizeName, // 👈 API එකෙන් එන නම sizeName
+            sizeCode: item.sizeCode,
+            sizeName: item.sizeName,
         });
     };
 
@@ -75,104 +72,101 @@ export default function SizeManagement() {
     return (
         <div className="min-h-screen bg-[#F8FAFC] p-4 md:p-10 text-slate-900 font-sans">
             <div className="max-w-6xl mx-auto">
-                <header className="mb-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
-                    <div className="flex items-center gap-4">
-                        <div className="bg-emerald-600 p-3 rounded-2xl shadow-lg">
-                            <Ruler className="text-white" size={28} />
-                        </div>
-                        <div>
-                            <h1 className="text-3xl font-black tracking-tight text-slate-900 uppercase">Size Guide</h1>
-                            <p className="text-slate-500 font-medium">Define size variants for your inventory</p>
-                        </div>
+                <header className="mb-10 flex items-center gap-4">
+                    <div className="bg-emerald-600 p-3 rounded-2xl shadow-lg">
+                        <Ruler className="text-white" size={28} />
+                    </div>
+                    <div>
+                        <h1 className="text-3xl font-black uppercase tracking-tight">Size Guide</h1>
+                        <p className="text-slate-500 font-medium">Manage inventory size variants</p>
                     </div>
                 </header>
 
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-                    {/* FORM */}
+                    {/* FORM SECTION */}
                     <div className="lg:col-span-5">
-                        <div className="bg-white rounded-[2.5rem] shadow-xl border border-slate-100 p-8 sticky top-10">
+                        <div className="bg-white rounded-[2.5rem] shadow-xl border border-slate-100 p-8">
                             <form onSubmit={handleSubmit} className="space-y-6">
-                                <div className="text-center mb-8 relative">
+                                <div className="text-center relative">
                                     {isEditing && (
-                                        <button type="button" onClick={resetForm} className="absolute right-0 top-0 p-2 text-slate-400 hover:text-emerald-600 transition">
+                                        <button type="button" onClick={resetForm} className="absolute right-0 top-0 p-2 text-slate-400 hover:text-emerald-600">
                                             <RotateCcw size={20} />
                                         </button>
                                     )}
                                     <div className="bg-emerald-50 w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-4 text-emerald-600">
                                         <Type size={28} />
                                     </div>
-                                    <h2 className="text-2xl font-bold text-slate-800">{isEditing ? "Update Size" : "New Size"}</h2>
+                                    <h2 className="text-2xl font-bold">{isEditing ? "Update Size" : "New Size"}</h2>
                                 </div>
 
                                 <div className="space-y-4">
                                     <div className="flex flex-col gap-2">
                                         <label className="text-sm font-bold text-slate-700 ml-1">Size Code</label>
-                                        <input
-                                            name="sizeCode"
-                                            required
-                                            value={formData.sizeCode}
-                                            onChange={handleChange}
-                                            className="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-emerald-500 outline-none transition-all"
-                                        />
+                                        <input name="sizeCode" required value={formData.sizeCode} onChange={handleChange} className="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:ring-2 focus:ring-emerald-500" placeholder="e.g. XL, UK 10"/>
                                     </div>
                                     <div className="flex flex-col gap-2">
                                         <label className="text-sm font-bold text-slate-700 ml-1">Full Name</label>
-                                        <input
-                                            name="sizeName"
-                                            required
-                                            value={formData.sizeName}
-                                            onChange={handleChange}
-                                            className="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-emerald-500 outline-none transition-all"
-                                        />
+                                        <input name="sizeName" required value={formData.sizeName} onChange={handleChange} className="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:ring-2 focus:ring-emerald-500" placeholder="e.g. Extra Large"/>
                                     </div>
                                 </div>
 
-                                <button
-                                    disabled={isLoading}
-                                    className={`w-full text-white font-bold py-4 rounded-2xl shadow-lg transition-all active:scale-[0.98] flex items-center justify-center gap-3 ${isEditing ? 'bg-emerald-600' : 'bg-slate-900'}`}
-                                >
+                                <button disabled={isLoading} className={`w-full text-white font-bold py-4 rounded-2xl shadow-lg flex items-center justify-center gap-3 transition-all ${isEditing ? 'bg-emerald-600' : 'bg-slate-900'}`}>
                                     {isLoading ? <Loader2 className="animate-spin" /> : <Save size={20} />}
-                                    {isEditing ? "Update Size" : "Add Size"}
+                                    {isEditing ? "Update Details" : "Add to Guide"}
                                 </button>
                             </form>
                         </div>
                     </div>
 
-                    {/* TABLE */}
-                    <div className="lg:col-span-7 bg-white rounded-[2.5rem] shadow-sm border border-slate-200 overflow-hidden h-fit">
-                        <div className="p-8 border-b border-slate-100 flex justify-between items-center">
-                            <h2 className="text-xl font-bold flex items-center gap-3"><span className="w-2 h-6 bg-emerald-500 rounded-full"></span>Available Sizes</h2>
-                            <span className="text-xs font-bold bg-emerald-50 px-4 py-1.5 rounded-full text-emerald-600 border border-emerald-100">{savedSizes.length} Total</span>
+                    {/* TABLE SECTION (FIXED NESTING) */}
+                    {/* TABLE SECTION (FIXED HEIGHT WITH SCROLL) */}
+                    <div className="lg:col-span-7 bg-white rounded-[2.5rem] border border-slate-200 overflow-hidden shadow-sm h-fit">
+                        {/* Table Header (Fixed) */}
+                        <div className="bg-slate-50 border-b border-slate-100 px-8 py-4 flex justify-between items-center">
+                            <h2 className="text-sm font-black uppercase tracking-widest text-slate-400">Available Sizes</h2>
+                            <span className="text-[10px] font-bold bg-slate-200 px-2 py-0.5 rounded-md text-slate-600">{savedSizes.length}</span>
                         </div>
 
-                        <div className="overflow-x-auto">
-                            <table className="w-full text-left">
-                                <thead>
-                                <tr className="bg-slate-50/50 text-slate-400 uppercase text-[10px] tracking-[0.2em] font-black border-b border-slate-100">
-                                    <th className="px-8 py-5">ID</th>
-                                    <th className="px-8 py-5">Size Code</th>
-                                    <th className="px-8 py-5">Full Name</th>
-                                    <th className="px-8 py-5 text-right">Action</th>
+                        {/* Scrollable Container */}
+                        <div className="overflow-y-auto max-h-[500px] custom-scrollbar">
+                            <table className="w-full text-left border-collapse">
+                                <thead className="sticky top-0 bg-slate-50 z-10 shadow-sm">
+                                <tr className="text-slate-400 uppercase text-[9px] tracking-widest font-black">
+                                    <th className="px-8 py-3">ID</th>
+                                    <th className="px-8 py-3">Code</th>
+                                    <th className="px-8 py-3">Name</th>
+                                    <th className="px-8 py-3 text-right">Action</th>
                                 </tr>
                                 </thead>
                                 <tbody className="divide-y divide-slate-50">
-                                {savedSizes.map((item) => (
-                                    <tr key={item.id} className="group hover:bg-emerald-50/20 transition-colors">
-                                        <td className="px-8 py-5 font-mono text-xs text-slate-400">#{item.id}</td>
-                                        <td className="px-8 py-5 font-black text-slate-800">{item.sizeCode}</td>
-                                        <td className="px-8 py-5 font-semibold text-slate-600">{item.sizeName}</td>
-                                        <td className="px-8 py-5 text-right">
-                                            <button onClick={() => handleEdit(item)} className="p-3 bg-white border border-slate-200 rounded-xl text-slate-400 hover:text-emerald-600 transition-all shadow-sm">
-                                                <Edit size={18} />
-                                            </button>
+                                {savedSizes.length > 0 ? (
+                                    savedSizes.map((item) => (
+                                        <tr key={item.id} className="group hover:bg-emerald-50/30 transition-colors">
+                                            <td className="px-8 py-3 font-mono text-[10px] text-slate-400">#{item.id}</td>
+                                            <td className="px-8 py-3 font-bold text-xs text-slate-800">{item.sizeCode}</td>
+                                            <td className="px-8 py-3 font-medium text-xs text-slate-500">{item.sizeName}</td>
+                                            <td className="px-8 py-3 text-right">
+                                                <button
+                                                    onClick={() => handleEdit(item)}
+                                                    className="p-2 bg-white border border-slate-200 rounded-lg text-slate-400 hover:text-emerald-600 hover:border-emerald-200 shadow-sm transition-all active:scale-90"
+                                                >
+                                                    <Edit size={14} />
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    ))
+                                ) : (
+                                    <tr>
+                                        <td colSpan={4} className="px-8 py-10 text-center text-slate-400 text-xs italic">
+                                            No sizes found. Add some to get started!
                                         </td>
                                     </tr>
-                                ))}
+                                )}
                                 </tbody>
                             </table>
                         </div>
-                    </div>
-                </div>
+
+                    </div>                </div>
             </div>
         </div>
     );
