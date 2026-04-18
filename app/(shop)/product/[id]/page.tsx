@@ -1,14 +1,18 @@
 "use client";
 import {use, useEffect, useState} from "react";
 import {Loader2, ShoppingCart} from "lucide-react";
+import { useCart} from "@/app/hooks/use-cart";
 
 export default function SingleProductView({params}: { params: Promise<{ id: string }> }) {
     const {id} = use(params);
+    const cart = useCart();
 
     const [product, setProduct] = useState<any>(null);
     const [loading, setLoading] = useState(true);
     const [selectedImage, setSelectedImage] = useState("");
     const [selectedSize, setSelectedSize] = useState<number | null>(null);
+
+
 
     useEffect(() => {
         if (!id) return;
@@ -21,6 +25,26 @@ export default function SingleProductView({params}: { params: Promise<{ id: stri
             })
             .catch(err => console.error("Error:", err));
     }, [id]);
+
+
+    const onAddToCart = () => {
+
+
+        const selectedStock = product.stocks.find((s: any) => s.id === selectedSize);
+
+        if(!selectedSize){
+            alert("Please select the size");
+            return;
+        }
+        cart.addItem({
+            id: product.id,
+            name: product.name,
+            price: product.price,
+            image: product.images[0]?.url,
+            size: selectedStock.size.sizeCode, // s.size.sizeCode ලෙස Prisma එකෙන් එන විදිහට
+            qty: 1
+        });
+    }
 
     if (loading) return <div className="min-h-screen flex items-center justify-center"><Loader2
         className="animate-spin text-blue-600" size={40}/></div>;
@@ -123,7 +147,7 @@ export default function SingleProductView({params}: { params: Promise<{ id: stri
 
                     {/* CTA Button */}
                     <div className="pt-6">
-                        <button
+                        <button onClick={onAddToCart}
                             className="w-full bg-slate-900 text-white font-bold py-5 rounded-[1.5rem] flex items-center justify-center gap-3 hover:bg-blue-600 transition-all active:scale-95 shadow-xl shadow-slate-200 group">
                             <ShoppingCart size={20} className="group-hover:animate-bounce"/>
                             ADD TO SHOPPING BAG

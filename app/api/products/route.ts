@@ -9,7 +9,6 @@ export async function GET(req: Request) {
 
         const products = await db.product.findMany({
             where: {
-                // Hirusha, මෙතනදී sectionId එකක් එව්වොත් විතරක් filter වෙනවා
                 ...(sectionId ? { sectionId: Number(sectionId) } : {})
             },
             orderBy: { createdAt: 'desc' },
@@ -18,7 +17,12 @@ export async function GET(req: Request) {
                 section: true,
                 images: true,
                 colors: true,
-                sizes: true
+                // Hirusha, මෙන්න මේ stocks කොටස තමයි වැදගත්ම දේ
+                stocks: {
+                    include: {
+                        size: true // Stock එක ඇතුළේ තියෙන size (S, M, L) details ගන්න
+                    }
+                }
             }
         });
 

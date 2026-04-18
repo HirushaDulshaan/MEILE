@@ -1,5 +1,15 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+
+async redirects() {
+    return [
+      {
+        source: '/',
+        destination: '/dees',
+        permanent: true, // SEO walata hodai
+      },
+    ]
+  },
   // Hirusha, 'serverComponentsExternalPackages' වෙනුවට දැන් පාවිච්චි කරන්නේ මේක:
   serverExternalPackages: ["@prisma/client"],
 
