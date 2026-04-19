@@ -1,34 +1,57 @@
 import { db } from "@/lib/db";
 import { NextResponse } from "next/server";
+import { loginSchema } from "@/lib/validations/auth";
+import logger from "@/lib/logger";
 
 export async function POST(request: Request) {
     try {
         const body = await request.json();
-        const { email, password } = body;
 
-        // 1. මේ email එකෙන් user කෙනෙක් ඉන්නවද බලනවා
+        // 1. Server-side Validation
+        const validation = loginSchema.safeParse(body);
+        if (!validation.success) {
+            logger.warn(`Invalid login format attempt: ${body.email}`);
+            return new NextResponse("Invalid email or password format", { status: 400 });
+        }
+
+        const { email, password } = validation.data;
+
+        // 2. User Check
         const user = await db.user.findUnique({
             where: { email }
         });
 
         if (!user) {
+            logger.info(`Login failed: User not found (${email})`);
             return new NextResponse("User not found", { status: 404 });
         }
 
-        // 2. Password එක ගැලපෙනවද බලනවා (අපි Plain text save කරපු නිසා කෙලින්ම බලන්න පුළුවන්)
+        // 3. Password check (Plain text comparison as requested)
         if (user.password !== password) {
-            return new NextResponse("Invalid password", { status: 401 });
+            logger.warn(`Login failed: Incorrect password attempt for ${email}`);
+            return new NextResponse("Invalid credentials", { status: 401 });
         }
 
-        // 3. Login සාර්ථකයි නම් user ගේ විස්තර යවනවා
+        // ✅ Log Successful Login
+        logger.info(`User logged in successfully: ${email} (Role: ${user.role})`);
+
+        // 4. Return user data (Zustand එකට අවශ්‍ය සියලුම fields සමඟ)
         return NextResponse.json({
             id: user.id,
-            name: user.name,
+            firstName: user.firstName,
+            lastName: user.lastName,
             email: user.email,
+            contact: user.contact,
+            address1: user.address1,
+            address2: user.address2,
+            city: user.city,
+            postalCode: user.postalCode,
             role: user.role
         });
 
-    } catch (error) {
-        return new NextResponse("Internal Error", { status: 500 });
+    } catch (error: any) {
+        // ❌ Error එක logs/error.log එකට සේව් කරනවා
+        logger.error(`LOGIN_API_ERROR: ${error.message}`, { stack: error.stack });
+        return new NextResponse("Internal Server Error", { status: 500 });
     }
 }

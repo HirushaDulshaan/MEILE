@@ -6,27 +6,74 @@ export async function GET(req: Request) {
     try {
         const { searchParams } = new URL(req.url);
         const sectionId = searchParams.get("sectionId");
+        const type = searchParams.get("type");
 
+        const includeOptions = {
+            category: true,
+            section: true,
+            images: true,
+            colors: true,
+            stocks: {
+                include: {
+                    size: true
+                }
+            }
+        };
+
+        // --- 1. REAL MOST SELLING LOGIC ---
+        // --- 1. REAL MOST SELLING LOGIC ---
+        if (type === "most-selling") {
+            const products = await db.product.findMany({
+                where: {
+                    ...(sectionId ? { sectionId: Number(sectionId) } : {}),
+                },
+                include: {
+                    ...includeOptions,
+                    _count: {
+                        select: { orderItems: true }
+                    }
+                },
+                orderBy: [
+                    {
+                        orderItems: {
+                            _count: 'desc' // වැඩිපුරම විකිණෙන ඒවා
+                        }
+                    },
+                    {
+                        isFeatured: 'desc' // ඊට පස්සේ Featured ඒවා
+                    }
+                ],
+                take: 5,
+            });
+            return NextResponse.json(products);
+        }
+
+        // --- 2. NEW ARRIVALS LOGIC ---
+        if (type === "new-arrivals") {
+            const products = await db.product.findMany({
+                where: {
+                    ...(sectionId ? { sectionId: Number(sectionId) } : {})
+                },
+                include: includeOptions,
+                orderBy: {
+                    createdAt: 'desc' // අලුත්ම ඒවා උඩට
+                },
+                take: 5,
+            });
+            return NextResponse.json(products);
+        }
+
+        // --- 3. NORMAL FETCHING ---
         const products = await db.product.findMany({
             where: {
                 ...(sectionId ? { sectionId: Number(sectionId) } : {})
             },
             orderBy: { createdAt: 'desc' },
-            include: {
-                category: true,
-                section: true,
-                images: true,
-                colors: true,
-                // Hirusha, මෙන්න මේ stocks කොටස තමයි වැදගත්ම දේ
-                stocks: {
-                    include: {
-                        size: true // Stock එක ඇතුළේ තියෙන size (S, M, L) details ගන්න
-                    }
-                }
-            }
+            include: includeOptions
         });
 
         return NextResponse.json(products);
+
     } catch (error) {
         console.error("[PRODUCTS_GET]", error);
         return new NextResponse("Internal Error", { status: 500 });

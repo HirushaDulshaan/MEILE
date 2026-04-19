@@ -1,18 +1,39 @@
+"use client";
+
+import { useEffect } from "react";
+import toast from "react-hot-toast";
 import Hero from "@/components/Hero";
 import NewArrivals from "@/components/NewArrivals";
+import MostSelling from "@/components/MostSelling";
 
 export default function Home() {
+
+    // ✅ Login වුණාට පස්සේ welcome toast show කරනවා
+    useEffect(() => {
+        const name = sessionStorage.getItem("loginSuccess");
+        if (name) {
+            sessionStorage.removeItem("loginSuccess");
+            toast.success(`Welcome back, ${name}!`, {
+                duration: 4000,
+                icon: '🚀',
+                style: {
+                    borderRadius: '12px',
+                    background: '#1e293b',
+                    color: '#fff',
+                    fontSize: '12px',
+                    fontWeight: 'bold',
+                    textTransform: 'uppercase',
+                    border: '1px solid #334155'
+                },
+            });
+        }
+    }, []);
+
     return (
         <main>
-            {/* මුළු පිටුවේම උඩින්ම Hero Section එක විතරක් පෙන්වනවා */}
             <Hero />
-            {/* Latest 4 Products Section */}
             <NewArrivals />
-
-            {/* ඔයාට මොනවා හරි අමතර විස්තරයක් පසුව දාන්න ඕනේ නම් මෙතනින් පටන් ගන්න පුළුවන් */}
-            {/* <div className="max-w-7xl mx-auto p-10">
-          ...
-      </div> */}
+            <MostSelling />
         </main>
     );
 }

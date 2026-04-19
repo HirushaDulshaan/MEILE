@@ -8,18 +8,55 @@ datasource db {
 
 // --- User Management ---
 model User {
-  id        Int      @id @default(autoincrement())
-  name      String?
-  email     String   @unique
-  password  String
-  role      Role     @default(USER)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id          Int      @id @default(autoincrement())
+  firstName   String
+  lastName    String
+  email       String   @unique
+  contact     String   @unique
+  password    String
+  // අලුතින් එකතු කරන fields (optional විදිහට දාන්න ප්‍රශ්නයක් නොවෙන්න)
+  address1    String?
+  address2    String?
+  city        String?
+  postalCode  String?
+  role        Role     @default(USER)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  orders    Order[]
 }
 
 enum Role {
   USER
   ADMIN
+}
+
+model Order {
+  id             Int         @id @default(autoincrement())
+  userId         Int
+  user           User        @relation(fields: [userId], references: [id])
+  items          OrderItem[]
+  totalAmount    Float
+  status         String      @default("Processing") // Processing, Shipped, Delivered, Cancelled
+  address        String      // ඕඩර් එක යවන්න ඕනේ ඇඩ්‍රස් එක
+  contact        String      // කන්ටැක්ට් නම්බර් එක
+  billingAddress  String?
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+  stripeSessionId  String?     @unique // 👈 මේ පේළිය තියෙන්නම ඕනේ
+}
+
+model OrderItem {
+  id        Int     @id @default(autoincrement())
+  orderId   Int
+  order     Order   @relation(fields: [orderId], references: [id])
+  productId Int
+  product   Product @relation(fields: [productId], references: [id])
+  productName String
+  productImage String
+  quantity  Int
+  price     Float
+
+
 }
 
 // --- Catalog Structure ---
@@ -48,6 +85,9 @@ model Product {
   name        String
   description String
   price       Float
+  isFeatured  Boolean  @default(false)
+  orderItems  OrderItem[]
+
 
   // Relationships
   category    Category       @relation(fields: [categoryId], references: [id])

@@ -28,23 +28,30 @@ export default function SingleProductView({params}: { params: Promise<{ id: stri
 
 
     const onAddToCart = () => {
-
-
+        // 1. කලින් Select කරපු stock එක හොයාගන්නවා
         const selectedStock = product.stocks.find((s: any) => s.id === selectedSize);
 
-        if(!selectedSize){
+        if (!selectedSize || !selectedStock) {
             alert("Please select the size");
             return;
         }
+
         cart.addItem({
             id: product.id,
             name: product.name,
             price: product.price,
             image: product.images[0]?.url,
-            size: selectedStock.size.sizeCode, // s.size.sizeCode ලෙස Prisma එකෙන් එන විදිහට
+            size: selectedStock.size.sizeCode, // UI එකේ පෙන්වන්න (උදා: UK 10)
+
+            // ✅ ඉතාම වැදගත්: සැබෑ Size ID එක (Prisma Size Table ID එක) මෙතනින් යවනවා
+            sizeId: selectedStock.sizeId,
+
             qty: 1
         });
-    }
+
+        // Optional: පොඩි success message එකක්
+        // alert("Added to cart!");
+    };
 
     if (loading) return <div className="min-h-screen flex items-center justify-center"><Loader2
         className="animate-spin text-blue-600" size={40}/></div>;

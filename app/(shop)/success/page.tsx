@@ -1,45 +1,66 @@
 "use client";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { useCart } from "@/app/hooks/use-cart";
-import { CheckCircle2, ShoppingBag, ArrowRight } from "lucide-react";
+import { useUserStore } from "@/app/hooks/use-user-store"; // ✅ User store එක ගත්තා
+import { CheckCircle2, ShoppingBag, ArrowRight, Loader2 } from "lucide-react";
 import Link from "next/link";
 
 export default function SuccessPage() {
     const cart = useCart();
+    const { user } = useUserStore(); // ✅ ලොග් වෙලා ඉන්න user ව ගත්තා
+    const searchParams = useSearchParams();
+    const sessionId = searchParams.get("session_id");
+    const [status, setStatus] = useState("processing");
 
-    // Payment එක success නිසා අපි cart එක clear කරමු
     useEffect(() => {
-        cart.clearCart();
-    }, []);
+        if (sessionId) {
+            fetch(`/api/checkout/success?session_id=${sessionId}`)
+                .then((res) => {
+                    if (res.ok) {
+                        setStatus("success");
+                        cart.clearCart();
+                    } else {
+                        setStatus("error");
+                    }
+                })
+                .catch(() => setStatus("error"));
+        }
+    }, [sessionId]);
 
     return (
-        <main className="min-h-[80vh] flex flex-col items-center justify-center px-6 font-sans">
-            <div className="bg-green-50 p-10 rounded-[3rem] flex flex-col items-center text-center max-w-md shadow-sm border border-green-100">
-                <div className="bg-green-500 p-4 rounded-full text-white mb-6 animate-bounce">
-                    <CheckCircle2 size={40} />
-                </div>
+        <main className="min-h-[80vh] flex flex-col items-center justify-center px-6">
+            <div className="bg-white p-10 rounded-[3rem] flex flex-col items-center text-center max-w-md shadow-2xl border border-slate-50">
+                {status === "processing" ? (
+                    <div className="flex flex-col items-center">
+                        <Loader2 className="animate-spin text-blue-600 mb-4" size={40} />
+                        <h2 className="font-black uppercase tracking-widest text-xs text-slate-400">Confirming Payment...</h2>
+                    </div>
+                ) : status === "success" ? (
+                    <>
+                        <div className="bg-green-500 p-4 rounded-full text-white mb-6 animate-bounce shadow-lg shadow-green-100">
+                            <CheckCircle2 size={40} />
+                        </div>
+                        <h1 className="text-3xl font-black text-slate-900 uppercase tracking-tighter mb-2">Order Confirmed!</h1>
+                        <p className="text-slate-500 font-medium mb-8 text-sm uppercase tracking-tight">
+                            {/* ✅ මෙතන නම dynamic කළා */}
+                            Thank you {user?.firstName || "Customer"}. Your payment was successful and your order is now processing.
+                        </p>
+                    </>
+                ) : (
+                    <div className="text-red-500 font-black uppercase text-xs">Something went wrong while saving your order.</div>
+                )}
 
-                <h1 className="text-3xl font-black text-slate-900 uppercase tracking-tighter mb-2">
-                    Payment Success!
-                </h1>
-                <p className="text-slate-500 font-medium leading-relaxed mb-8">
-                    Thank you for your purchase Hirusha. Your order has been placed successfully and we'll start processing it right away.
-                </p>
-
-                <div className="w-full space-y-3">
-                    <Link href="/dees" className="w-full bg-slate-900 text-white font-black py-4 rounded-2xl flex items-center justify-center gap-3 hover:bg-blue-600 transition-all uppercase tracking-widest text-xs">
-                        Continue Shopping <ArrowRight size={16} />
+                <div className="w-full space-y-3 mt-4">
+                    {/* ✅ Link එක update කළා My Orders tab එකටම යන විදිහට */}
+                    <Link href="/profile?tab=orders" className="w-full bg-slate-900 text-white font-black py-4 rounded-2xl flex items-center justify-center gap-3 hover:bg-blue-600 transition-all uppercase tracking-widest text-xs">
+                        View My Orders <ArrowRight size={16} />
                     </Link>
-
-                    <Link href="/" className="w-full bg-white text-slate-500 font-bold py-4 rounded-2xl flex items-center justify-center gap-3 hover:bg-slate-50 transition-all uppercase tracking-widest text-[10px]">
-                        <ShoppingBag size={14} /> Back to Home
+                    <Link href="/dees" className="w-full bg-white text-slate-500 font-bold py-4 rounded-2xl flex items-center justify-center gap-3 hover:bg-slate-50 transition-all uppercase tracking-widest text-[10px]">
+                        Continue Shopping
                     </Link>
                 </div>
             </div>
-
-            <p className="mt-10 text-slate-400 text-[10px] font-bold uppercase tracking-[0.2em]">
-                Secure Order Confirmed by MEILI
-            </p>
         </main>
     );
 }

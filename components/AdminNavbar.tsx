@@ -18,48 +18,61 @@ const AdminNavbar = () => {
 
                     {/* Desktop Links */}
                     <div className="hidden md:flex items-center gap-10 text-[13px] font-bold">
-                        <Link href="/products" className="flex items-center gap-2 hover:text-gray-400 transition">
-                            <Package size={16} /> Products
-                        </Link>
+
+                        {/* ✅ Products Dropdown */}
+                        <div className="relative group py-2">
+                            <button className="flex items-center gap-2 hover:text-gray-400 transition focus:outline-none">
+                                <Package size={16} /> Products <ChevronDown size={14} />
+                            </button>
+
+                            {/* Dropdown Menu */}
+                            <div className="absolute top-full left-0 w-48 hidden group-hover:block pt-4 z-50">
+                                <div className="bg-white text-black rounded-xl shadow-2xl py-3 border border-gray-100">
+
+                                    {/* 1. All Products - දැනට තියෙන ඒව බලන්න */}
+                                    <Link href="/view-products" className="block px-6 py-2 hover:bg-gray-100 transition normal-case font-semibold">
+                                        All Products
+                                    </Link>
+
+                                    {/* 2. Save Product - අලුතින් ඇඩ් කරන්න */}
+                                    <Link href="/products" className="block px-6 py-2 hover:bg-gray-100 transition normal-case font-semibold">
+                                        Save Product
+                                    </Link>
+
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Users Link */}
                         <Link href="/users" className="flex items-center gap-2 hover:text-gray-400 transition">
                             <Users size={16} /> Users
                         </Link>
+
+                        {/* Orders Link */}
                         <Link href="/orders" className="flex items-center gap-2 hover:text-gray-400 transition">
                             <ShoppingBag size={16} /> Orders
                         </Link>
 
                         {/* Registration Dropdown */}
-                        {/* Registration Dropdown Container */}
-                        <div className="relative group py-2"> {/* Methane 'py-2' dammahama mouse eka thawa tikak eliyata giyath menu eka wahenne ne */}
+                        <div className="relative group py-2">
                             <button className="flex items-center gap-2 hover:text-gray-400 transition focus:outline-none">
                                 <Settings size={16} /> Registration <ChevronDown size={14} />
                             </button>
 
-                            {/* Dropdown Menu */}
-                            {/* Dropdown Menu */}
-                            <div className="absolute top-full left-0 w-48 hidden group-hover:block pt-4">
+                            <div className="absolute top-full left-0 w-48 hidden group-hover:block pt-4 z-50">
                                 <div className="bg-white text-black rounded-xl shadow-2xl py-3 border border-gray-100">
-
-                                    {/* 1. Colour - කලින් තිබ්බේ /dashboard/reg/color. Meka hariyata confirm karanna */}
                                     <Link href="/reg/color" className="block px-6 py-2 hover:bg-gray-100 transition normal-case font-semibold">
                                         Colour
                                     </Link>
-
-                                    {/* 2. Size */}
                                     <Link href="/reg/size" className="block px-6 py-2 hover:bg-gray-100 transition normal-case font-semibold">
                                         Size
                                     </Link>
-
-                                    {/* 3. Section */}
                                     <Link href="/reg/section" className="block px-6 py-2 hover:bg-gray-100 transition normal-case font-semibold">
                                         Section
                                     </Link>
-
-                                    {/* 4. Category */}
                                     <Link href="/reg/category" className="block px-6 py-2 hover:bg-gray-100 transition normal-case font-semibold">
                                         Category
                                     </Link>
-
                                 </div>
                             </div>
                         </div>
