@@ -3,9 +3,11 @@ import React, { useState } from "react";
 import { useCart } from "@/app/hooks/use-cart";
 import { ChevronLeft, CreditCard, Truck, ShieldCheck, ReceiptText } from "lucide-react";
 import Link from "next/link";
+import { useUserStore } from "@/app/hooks/use-user-store";
 
 export default function CheckoutPage() {
     const cart = useCart();
+    const { user } = useUserStore(); // 👈 මේ පේළිය අනිවාර්යයෙන්ම එකතු කරන්න
 
     const [shippingData, setShippingData] = useState({
         firstName: "", lastName: "", email: "", address: "", city: "", phone: "",
@@ -44,20 +46,28 @@ export default function CheckoutPage() {
     const onPlaceOrder = async (e: React.FormEvent) => {
         e.preventDefault();
 
+        // යූසර් ලොග් වෙලා නැත්නම් ප්ලේස් ඕඩර් කරන්න දෙන්න එපා
+        if (!user) {
+            alert("Please admin-login to place an order");
+            return;
+        }
+
         try {
             const response = await fetch("/api/checkout", {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                headers: { "Content-Type": "application/json" }, // Header එක අමතක කරන්න එපා
                 body: JSON.stringify({
                     items: cart.items,
                     email: shippingData.email,
+                    userId: user.id, // දැන් මේක වැඩ කරනවා
+                    address: shippingData.address,
+                    phone: shippingData.phone
                 }),
             });
 
             const data = await response.json();
 
             if (data.url) {
-                // Stripe Checkout Page එකට User ව යවනවා
                 window.location.href = data.url;
             } else {
                 alert("Payment failed to initialize.");
@@ -67,7 +77,6 @@ export default function CheckoutPage() {
             alert("Something went wrong!");
         }
     };
-
     if (cart.items.length === 0) return <div className="min-h-screen flex flex-col items-center justify-center font-bold">Your cart is empty!</div>;
 
     // Reusable input class to keep code clean and fix the white text issue

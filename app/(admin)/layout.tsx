@@ -1,12 +1,21 @@
+"use client"; // ✅ usePathname පාවිච්චි කරන්න නම් මේක අනිවාර්යයි
+
+import { usePathname } from "next/navigation";
 import AdminNavbar from "@/components/AdminNavbar";
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
-    return (
-        <div className="flex min-h-screen bg-gray-100">
-            <main className="flex-1">
-                <AdminNavbar/>
+    const pathname = usePathname();
 
-                {children}
+    const isLoginPage = pathname === "/admin-login";
+
+    return (
+        <div className="flex min-h-screen bg-gray-100 font-sans">
+            <main className="flex-1">
+                {!isLoginPage && <AdminNavbar />}
+
+                <div className={!isLoginPage ? "p-0" : ""}>
+                    {children}
+                </div>
             </main>
         </div>
     );
