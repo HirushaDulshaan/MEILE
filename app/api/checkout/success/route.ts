@@ -3,10 +3,8 @@ import Stripe from "stripe";
 import { NextResponse } from "next/server";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-    apiVersion: "2026-03-25.dahlia",
+    apiVersion: "2026-03-25.dahlia", // Stripe version එක ඔයාගේ env එකට ගැලපෙන ලෙස තියන්න
 });
-
-// ... imports ටික ඒ විදිහටම තියන්න
 
 export async function GET(req: Request) {
     const { searchParams } = new URL(req.url);
@@ -37,8 +35,8 @@ export async function GET(req: Request) {
 
         if (!userId || isNaN(parsedUserId)) return new NextResponse("Invalid User ID", { status: 400 });
 
-        // 🚀 Transaction පටන් ගන්නවා
-        const order = await db.$transaction(async (tx) => {
+        // 🚀 Transaction පටන් ගන්නවා (tx: any ලෙස Fix කර ඇත)
+        const order = await db.$transaction(async (tx: any) => {
 
             // ඕඩර් එක ක්‍රියේට් කිරීම
             const newOrder = await tx.order.create({
@@ -70,23 +68,25 @@ export async function GET(req: Request) {
             for (const item of session.line_items?.data || []) {
                 const productMetadata = (item.price?.product as Stripe.Product).metadata;
 
-                const pId = Number(productMetadata.productId);
-                const sId = Number(productMetadata.sizeId);
-                const orderQty = item.quantity || 1;
+                if (productMetadata) {
+                    const pId = Number(productMetadata.productId);
+                    const sId = Number(productMetadata.sizeId);
+                    const orderQty = item.quantity || 1;
 
-                if (!isNaN(pId) && !isNaN(sId)) {
-                    await tx.stock.update({
-                        where: {
-                            productId_sizeId: {
-                                productId: pId,
-                                sizeId: sId,
+                    if (!isNaN(pId) && !isNaN(sId)) {
+                        await tx.stock.update({
+                            where: {
+                                productId_sizeId: {
+                                    productId: pId,
+                                    sizeId: sId,
+                                }
+                            },
+                            data: {
+                                qty: { decrement: orderQty }
                             }
-                        },
-                        data: {
-                            qty: { decrement: orderQty }
-                        }
-                    });
-                    console.log(`✅ Stock updated: Product ${pId}, Size ${sId}`);
+                        });
+                        console.log(`✅ Stock updated: Product ${pId}, Size ${sId}`);
+                    }
                 }
             }
 
