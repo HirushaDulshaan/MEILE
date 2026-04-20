@@ -1,7 +1,6 @@
 import { db } from "@/lib/db";
 import { NextResponse } from "next/server";
 import { loginSchema } from "@/lib/validations/auth";
-import logger from "@/lib/logger";
 
 export async function POST(request: Request) {
     try {
@@ -10,7 +9,7 @@ export async function POST(request: Request) {
         // 1. Server-side Validation
         const validation = loginSchema.safeParse(body);
         if (!validation.success) {
-            logger.warn(`Invalid login format attempt: ${body.email}`);
+            console.warn(`Invalid login format attempt: ${body.email}`);
             return new NextResponse("Invalid email or password format", { status: 400 });
         }
 
@@ -22,20 +21,19 @@ export async function POST(request: Request) {
         });
 
         if (!user) {
-            logger.info(`Login failed: User not found (${email})`);
+            console.info(`Login failed: User not found (${email})`);
             return new NextResponse("User not found", { status: 404 });
         }
 
-        // 3. Password check (Plain text comparison as requested)
+        // 3. Password check
         if (user.password !== password) {
-            logger.warn(`Login failed: Incorrect password attempt for ${email}`);
+            console.warn(`Login failed: Incorrect password attempt for ${email}`);
             return new NextResponse("Invalid credentials", { status: 401 });
         }
 
-        // ✅ Log Successful Login
-        logger.info(`User logged in successfully: ${email} (Role: ${user.role})`);
+        console.info(`User logged in successfully: ${email}`);
 
-        // 4. Return user data (Zustand එකට අවශ්‍ය සියලුම fields සමඟ)
+        // 4. Return user data
         return NextResponse.json({
             id: user.id,
             firstName: user.firstName,
@@ -50,8 +48,8 @@ export async function POST(request: Request) {
         });
 
     } catch (error: any) {
-        // ❌ Error එක logs/error.log එකට සේව් කරනවා
-        logger.error(`LOGIN_API_ERROR: ${error.message}`, { stack: error.stack });
+        // Vercel dashboard එකේ බලාගන්න මෙතන console.error දාන්න
+        console.error("LOGIN_API_ERROR:", error);
         return new NextResponse("Internal Server Error", { status: 500 });
     }
 }
