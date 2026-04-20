@@ -1,14 +1,14 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { useCart } from "@/app/hooks/use-cart";
-import { useUserStore } from "@/app/hooks/use-user-store"; // ✅ User store එක ගත්තා
-import { CheckCircle2, ShoppingBag, ArrowRight, Loader2 } from "lucide-react";
+import { useUserStore } from "@/app/hooks/use-user-store";
+import { CheckCircle2, ArrowRight, Loader2 } from "lucide-react";
 import Link from "next/link";
 
-export default function SuccessPage() {
+function SuccessContent() {
     const cart = useCart();
-    const { user } = useUserStore(); // ✅ ලොග් වෙලා ඉන්න user ව ගත්තා
+    const { user } = useUserStore();
     const searchParams = useSearchParams();
     const sessionId = searchParams.get("session_id");
     const [status, setStatus] = useState("processing");
@@ -43,7 +43,6 @@ export default function SuccessPage() {
                         </div>
                         <h1 className="text-3xl font-black text-slate-900 uppercase tracking-tighter mb-2">Order Confirmed!</h1>
                         <p className="text-slate-500 font-medium mb-8 text-sm uppercase tracking-tight">
-                            {/* ✅ මෙතන නම dynamic කළා */}
                             Thank you {user?.firstName || "Customer"}. Your payment was successful and your order is now processing.
                         </p>
                     </>
@@ -52,7 +51,6 @@ export default function SuccessPage() {
                 )}
 
                 <div className="w-full space-y-3 mt-4">
-                    {/* ✅ Link එක update කළා My Orders tab එකටම යන විදිහට */}
                     <Link href="/profile?tab=orders" className="w-full bg-slate-900 text-white font-black py-4 rounded-2xl flex items-center justify-center gap-3 hover:bg-blue-600 transition-all uppercase tracking-widest text-xs">
                         View My Orders <ArrowRight size={16} />
                     </Link>
@@ -62,5 +60,17 @@ export default function SuccessPage() {
                 </div>
             </div>
         </main>
+    );
+}
+
+export default function SuccessPage() {
+    return (
+        <Suspense fallback={
+            <main className="min-h-[80vh] flex items-center justify-center">
+                <Loader2 className="animate-spin text-blue-600" size={40} />
+            </main>
+        }>
+            <SuccessContent />
+        </Suspense>
     );
 }
