@@ -1,0 +1,156 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// --- User Management ---
+model User {
+  id         Int      @id @default(autoincrement())
+  firstName  String
+  lastName   String
+  email      String   @unique
+  contact    String   @unique
+  password   String
+  address1   String?
+  address2   String?
+  city       String?
+  postalCode String?
+  role       Role     @default(USER)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  orders     Order[]
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+model Order {
+  id              Int         @id @default(autoincrement())
+  userId          Int
+  user            User        @relation(fields: [userId], references: [id])
+  items           OrderItem[]
+  totalAmount     Float
+  status          String      @default("Processing") // Processing, Shipped, Delivered, Cancelled
+  address         String // ඕඩර් එක යවන්න ඕනේ ඇඩ්‍රස් එක
+  contact         String // කන්ටැක්ට් නම්බර් එක
+  billingAddress  String?
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+  stripeSessionId String?     @unique // 👈 මේ පේළිය තියෙන්නම ඕනේ
+}
+
+model OrderItem {
+  id           Int     @id @default(autoincrement())
+  orderId      Int
+  order        Order   @relation(fields: [orderId], references: [id])
+  productId    Int
+  product      Product @relation(fields: [productId], references: [id])
+  productName  String
+  productImage String
+  quantity     Int
+  price        Float
+}
+
+// --- Catalog Structure ---
+model Section {
+  id         Int        @id @default(autoincrement())
+  name       String     @unique
+  categories Category[]
+  products   Product[]
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+}
+
+model Category {
+  id        Int       @id @default(autoincrement())
+  name      String
+  section   Section   @relation(fields: [sectionId], references: [id])
+  sectionId Int // String thibbe, Int kala
+  products  Product[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+// --- Product Core ---
+model Product {
+  id          Int         @id @default(autoincrement())
+  name        String
+  description String
+  price       Float
+  isFeatured  Boolean     @default(false)
+  orderItems  OrderItem[]
+
+  // Relationships
+  category   Category @relation(fields: [categoryId], references: [id])
+  categoryId Int // String thibbe, Int kala
+  section    Section  @relation(fields: [sectionId], references: [id])
+  sectionId  Int // String thibbe, Int kala
+
+  // One-to-Many: Images
+  images ProductImage[]
+
+  // Many-to-Many: Colors & Sizes
+  colors Color[]
+  sizes  Size[]
+
+  // One-to-Many: Stock records
+  stocks    Stock[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ProductImage {
+  id        Int     @id @default(autoincrement())
+  url       String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId Int // String thibbe, Int kala
+}
+
+// --- Attributes ---
+model Color {
+  id        Int       @id @default(autoincrement())
+  name      String    @unique
+  hexCode   String    @unique
+  products  Product[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Size {
+  id        Int       @id @default(autoincrement())
+  sizeCode  String    @unique
+  sizeName  String
+  products  Product[]
+  stocks    Stock[]
+  createdAt DateTime  @default(now())
+}
+
+// --- Inventory Management ---
+model Stock {
+  id        Int      @id @default(autoincrement())
+  productId Int
+  product   Product  @relation(fields: [productId], references: [id])
+  sizeId    Int // String thibbe, Int kala
+  size      Size     @relation(fields: [sizeId], references: [id])
+  qty       Int      @default(0)
+  status    String // e.g., "Active", "Out of Stock", "Low Stock"
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([productId, sizeId])
+}
+
+model VerificationToken {
+  id      Int      @id @default(autoincrement())
+  email   String   @unique
+  token   String
+  expires DateTime
+
+  @@unique([email, token])
+}

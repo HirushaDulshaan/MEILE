@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { Toaster } from "react-hot-toast"; // 👈 මේක අනිවාර්යයෙන්ම ඕනේ
 
 const geistSans = Geist({
     variable: "--font-geist-sans",
@@ -23,10 +24,20 @@ export default function RootLayout({
     children: React.ReactNode;
 }>) {
     return (
-        // මේ tags දෙක අනිවාර්යයෙන්ම මෙතන තියෙන්න ඕනේ
-        <html lang="en">
+        // ✅ suppressHydrationWarning ඇඩ් කරන්න.
+        // එතකොට browser extensions නිසා එන attributes වල පරස්පරතා Next.js නොසලකා හරිනවා.
+        <html lang="en" suppressHydrationWarning>
         <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        {children} {/* මෙතනට තමයි අර (shop) සහ (dashboard) layouts ටික ඇවිත් වාඩි වෙන්නේ */}
+        <Toaster
+            position="top-center"
+            reverseOrder={false}
+            toastOptions={{
+                style: {
+                    zIndex: 9999,
+                }
+            }}
+        />
+        {children}
         </body>
         </html>
     );

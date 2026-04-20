@@ -2,6 +2,7 @@
 import {use, useEffect, useState} from "react";
 import {Loader2, ShoppingCart} from "lucide-react";
 import { useCart} from "@/app/hooks/use-cart";
+import toast from "react-hot-toast";
 
 export default function SingleProductView({params}: { params: Promise<{ id: string }> }) {
     const {id} = use(params);
@@ -31,8 +32,19 @@ export default function SingleProductView({params}: { params: Promise<{ id: stri
         // 1. කලින් Select කරපු stock එක හොයාගන්නවා
         const selectedStock = product.stocks.find((s: any) => s.id === selectedSize);
 
+        // ❌ වැරදුණු අවස්ථාව: Size එකක් තෝරා නැති විට
         if (!selectedSize || !selectedStock) {
-            alert("Please select the size");
+            toast.error("Please select a size first!", {
+                style: {
+                    borderRadius: '12px',
+                    background: '#fff',
+                    color: '#ef4444',
+                    fontSize: '12px',
+                    fontWeight: 'bold',
+                    textTransform: 'uppercase',
+                    border: '1px solid #fee2e2'
+                }
+            });
             return;
         }
 
@@ -41,16 +53,12 @@ export default function SingleProductView({params}: { params: Promise<{ id: stri
             name: product.name,
             price: product.price,
             image: product.images[0]?.url,
-            size: selectedStock.size.sizeCode, // UI එකේ පෙන්වන්න (උදා: UK 10)
-
-            // ✅ ඉතාම වැදගත්: සැබෑ Size ID එක (Prisma Size Table ID එක) මෙතනින් යවනවා
+            size: selectedStock.size.sizeCode,
             sizeId: selectedStock.sizeId,
-
             qty: 1
         });
 
-        // Optional: පොඩි success message එකක්
-        // alert("Added to cart!");
+
     };
 
     if (loading) return <div className="min-h-screen flex items-center justify-center"><Loader2

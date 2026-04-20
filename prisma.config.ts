@@ -1,8 +1,10 @@
-import { defineConfig } from '@prisma/config';
+import { defineConfig } from '@prisma/config'
+import * as dotenv from 'dotenv'
+
+dotenv.config()
 
 export default defineConfig({
   datasource: {
-    // කෙලින්ම URL එක මෙතනට දීලා බලන්න වැඩේ වෙනවද කියලා
-    url: "postgresql://postgres:wasana25@localhost:5433/eshop_db?schema=public",
+    url: process.env.DIRECT_URL!,
   },
-});
+})

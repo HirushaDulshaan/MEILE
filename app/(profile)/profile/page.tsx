@@ -2,12 +2,13 @@
 
 import React, { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
-import { User as UserIcon, Package, Settings, ChevronRight, LogOut } from "lucide-react";
+import { User as UserIcon, Package, Settings, ChevronRight, LogOut, Heart } from "lucide-react"; // Heart import කළා
 import { useUserStore } from "@/app/hooks/use-user-store";
 import ProfileContent from "@/components/ProfileContent";
 import OrdersContent from "@/components/OrdersContent";
+import WishlistContent from "@/components/WishlistContent";
+import SettingsContent from "@/components/SettingsContent";
 
-// SearchParams පාවිච්චි කරන නිසා Suspense එකක් ඇතුළේ දාන එක හොඳයි
 function ProfilePageContent() {
     const { user } = useUserStore();
     const [activeTab, setActiveTab] = useState("profile");
@@ -17,25 +18,29 @@ function ProfilePageContent() {
         const tab = searchParams.get("tab");
         if (tab === "orders") setActiveTab("orders");
         else if (tab === "profile") setActiveTab("profile");
+        else if (tab === "wishlist") setActiveTab("wishlist"); // wishlist එකටත් auto-switch වෙන්න හැදුවා
     }, [searchParams]);
 
+    // Sidebar Menu Items - මම මේවා ටිකක් පිරිසිදු කළා
     const menuItems = [
         { id: "profile", label: "My Profile", icon: <UserIcon size={18} /> },
         { id: "orders", label: "My Orders", icon: <Package size={18} /> },
+        { id: "wishlist", label: "My Wishlist", icon: <Heart size={18} /> }, // 👈 මෙතන ලේබල් එකයි අයිකන් එකයි හැදුවා
         { id: "settings", label: "Settings", icon: <Settings size={18} /> },
     ];
 
     return (
         <div className="max-w-7xl mx-auto px-6 py-10 lg:py-16">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+
                 {/* LEFT SIDEBAR */}
                 <aside className="lg:col-span-3 space-y-4">
                     <div className="p-6 bg-white rounded-[2rem] border border-slate-100 shadow-sm mb-6 flex items-center gap-4">
-                        <div className="w-12 h-12 bg-blue-600 rounded-2xl flex items-center justify-center text-white font-black text-xl">
+                        <div className="w-12 h-12 bg-blue-600 rounded-2xl flex items-center justify-center text-white font-black text-xl shadow-lg shadow-blue-100">
                             {user?.firstName?.charAt(0) || "U"}
                         </div>
-                        <div>
-                            <h2 className="font-black text-slate-900 text-sm uppercase">
+                        <div className="min-w-0">
+                            <h2 className="font-black text-slate-900 text-sm uppercase truncate">
                                 {user?.firstName} {user?.lastName}
                             </h2>
                             <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Premium Member</p>
@@ -47,29 +52,36 @@ function ProfilePageContent() {
                             <button
                                 key={item.id}
                                 onClick={() => setActiveTab(item.id)}
-                                className={`w-full flex items-center justify-between p-4 rounded-2xl transition-all ${
+                                className={`w-full flex items-center justify-between p-4 rounded-2xl transition-all duration-300 ${
                                     activeTab === item.id
-                                        ? "bg-slate-900 text-white shadow-xl shadow-slate-200"
+                                        ? "bg-slate-900 text-white shadow-xl shadow-slate-200 translate-x-2" // Active එක ටිකක් එළියට පැන්නුවා
                                         : "bg-white text-slate-500 hover:bg-slate-50 border border-slate-100"
                                 }`}
                             >
                                 <div className="flex items-center gap-3">
-                                    {item.icon}
+                                    <span className={`${activeTab === item.id ? "text-blue-400" : "text-slate-400"}`}>
+                                        {item.icon}
+                                    </span>
                                     <span className="uppercase tracking-widest text-[10px] font-black">{item.label}</span>
                                 </div>
                                 <ChevronRight size={14} className={activeTab === item.id ? "opacity-100" : "opacity-0"} />
                             </button>
                         ))}
-                        <button className="w-full flex items-center gap-3 p-4 rounded-2xl text-red-500 font-black text-[10px] uppercase tracking-widest hover:bg-red-50 transition-all mt-10">
-                            <LogOut size={18} /> Logout
+
+                        <button className="w-full flex items-center gap-3 p-4 rounded-2xl text-red-500 font-black text-[10px] uppercase tracking-widest hover:bg-red-50 transition-all mt-10 group">
+                            <LogOut size={18} className="group-hover:-translate-x-1 transition-transform" /> Logout
                         </button>
                     </nav>
                 </aside>
 
                 {/* RIGHT CONTENT AREA */}
-                <section className="lg:col-span-9 bg-white rounded-[2.5rem] border border-slate-100 p-8 md:p-12 shadow-sm min-h-[600px] relative overflow-hidden">
+                <section className="lg:col-span-9 bg-white rounded-[2.5rem] border border-slate-100 p-8 md:p-12 shadow-sm min-h-[600px] relative">
                     {activeTab === "profile" && <ProfileContent />}
                     {activeTab === "orders" && <OrdersContent />}
+                    {activeTab === "wishlist" && <WishlistContent />} {/* 👈 ID එක update කළා */}
+                    {activeTab === "settings" && <SettingsContent />} {/* 👈 ID එක update කළා */}
+
+
                 </section>
             </div>
         </div>
@@ -78,7 +90,11 @@ function ProfilePageContent() {
 
 export default function ProfilePage() {
     return (
-        <Suspense fallback={<div>Loading...</div>}>
+        <Suspense fallback={
+            <div className="h-screen flex items-center justify-center uppercase font-black text-[10px] tracking-widest text-slate-400">
+                Loading Profile...
+            </div>
+        }>
             <ProfilePageContent />
         </Suspense>
     );

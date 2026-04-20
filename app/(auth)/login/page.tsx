@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import {useEffect, useState} from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useUserStore } from "@/app/hooks/use-user-store";
@@ -12,6 +12,18 @@ export default function LoginPage() {
     const [formData, setFormData] = useState({ email: "", password: "" });
     const [loading, setLoading] = useState(false);
     const [errors, setErrors] = useState<any>({});
+
+    useEffect(() => {
+        // පාස්වර්ඩ් එක රීසෙට් කරලා ආවා නම් මැසේජ් එකක් පෙන්වමු
+        const resetSuccess = sessionStorage.getItem("passwordResetSuccess");
+        if (resetSuccess) {
+            toast.success("Password reset successful! Please login with your new password.", {
+                duration: 5000,
+                icon: '🔐'
+            });
+            sessionStorage.removeItem("passwordResetSuccess");
+        }
+    }, []);
 
     const setUser = useUserStore((state) => state.setUser);
     const router = useRouter();
@@ -129,7 +141,8 @@ export default function LoginPage() {
                     </div>
 
                     <div className="flex justify-end mt-4">
-                        <Link href="#" className="text-[10px] font-black text-blue-600 uppercase tracking-widest hover:underline">
+                        {/* ✅ මෙතන ලින්ක් එක /forgot-password වලට මාරු කරන්න */}
+                        <Link href="/forgot-password" className="text-[10px] font-black text-blue-600 uppercase tracking-widest hover:underline">
                             Forgot Password?
                         </Link>
                     </div>
