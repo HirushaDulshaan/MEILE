@@ -1,5 +1,6 @@
-import { create } from "zustand"; // '/react' කෑල්ල අවශ්‍ය නැහැ
+import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
+import toast from "react-hot-toast";
 
 interface CartItem {
     id: number;
@@ -19,7 +20,6 @@ interface CartStore {
     clearCart: () => void;
 }
 
-// Hirusha, මෙතන 'create<CartStore>()' කියලා brackets දාලා ඊට පස්සේ persist එක පටන් ගන්න
 export const useCart = create<CartStore>()(
     persist(
         (set, get) => ({
@@ -31,11 +31,22 @@ export const useCart = create<CartStore>()(
                 );
 
                 if (existingItem) {
-                    return alert("Item already in cart! 🛒");
+                    // ❌ Alert වෙනුවට Toast එකක් දාමු
+                    return toast.error("This item is already in your cart! 🛒", {
+                        style: {
+                            borderRadius: '10px',
+                            background: '#333',
+                            color: '#fff',
+                            fontSize: '12px'
+                        }
+                    });
                 }
 
                 set({ items: [...get().items, data] });
-                alert("Added to cart successfully! 🚀");
+                toast.success(`${data.name} added to cart! 🚀`, {
+                    duration: 3000,
+                    icon: '🛍️',
+                });
             },
             removeItem: (id: number, size: string) => {
                 set({
@@ -43,6 +54,7 @@ export const useCart = create<CartStore>()(
                         (item) => !(item.id === id && item.size === size)
                     ),
                 });
+                toast.success("Item removed from cart");
             },
             updateQty: (id: number, size: string, action: 'plus' | 'minus') => {
                 const currentItems = get().items;

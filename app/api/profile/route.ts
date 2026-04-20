@@ -1,31 +1,46 @@
 import { db } from "@/lib/db";
 import { NextResponse } from "next/server";
+import { profileSchema } from "@/lib/validations/auth";
+import logger from "@/lib/logger";
 
-export async function PUT(req: Request) {
+export async function PATCH(req: Request) {
     try {
         const body = await req.json();
-        const { userId, firstName, lastName, email, mobile, address1, address2, city, postalCode } = body;
 
-        // Prisma හරහා User ගේ තොරතුරු සහ ඇඩ්‍රස් එක update කරනවා
-        // ඔයාගේ schema එකේ මේ fields ටික තිබිය යුතුයි
+        // 1. Zod Validation
+        // body එකේ කෙලින්ම contact සහ id තියෙන නිසා අමුතුවෙන් map කරන්න ඕනේ නැහැ
+        const validation = profileSchema.safeParse(body);
+
+        if (!validation.success) {
+            console.log("VALIDATION_ERROR_DETAILS:", validation.error.format());
+            // body.id ලෙස පාවිච්චි කරන්න (body.userId නෙවෙයි)
+            logger.warn(`Profile update validation failed for User ID: ${body.id}`);
+            return new NextResponse("Invalid data formats", { status: 400 });
+        }
+
+        const { id } = body; // Frontend එකෙන් එන 'id' එක ගන්න
+        const validatedData = validation.data;
+
+        // 2. Database Update
         const updatedUser = await db.user.update({
-            where: { id: Number(userId) },
+            where: { id: Number(id) },
             data: {
-                firstName,
-                lastName,
-                email,
-                contact: mobile, // Database එකේ තියෙන්නේ contact නමින් නම්
-                // මෙතනින් පල්ලෙහා තියෙන ඒවත් schema එකේ තියෙන්න ඕනේ
-                address1,
-                address2,
-                city,
-                postalCode,
+                firstName: validatedData.firstName,
+                lastName: validatedData.lastName,
+                email: validatedData.email,
+                contact: validatedData.contact,
+                address1: validatedData.address1,
+                address2: validatedData.address2,
+                city: validatedData.city,
+                postalCode: validatedData.postalCode,
             }
         });
 
+        logger.info(`Profile updated successfully: ${updatedUser.email}`);
         return NextResponse.json(updatedUser);
-    } catch (error) {
-        console.error("[PROFILE_UPDATE_ERROR]", error);
+
+    } catch (error: any) {
+        logger.error(`PROFILE_UPDATE_ERROR: ${error.message}`, { stack: error.stack });
         return new NextResponse("Internal Error", { status: 500 });
     }
 }

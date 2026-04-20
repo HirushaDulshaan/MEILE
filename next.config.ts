@@ -1,24 +1,42 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // 1. Cloudinary සහ අනෙක් External Images allow කිරීම
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'res.cloudinary.com',
+        pathname: '**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'utfs.io',
+        pathname: '**',
+      },
+    ],
+  },
 
-async redirects() {
+  // 2. Redirects (මුල් පිටුවෙන් /dees වෙත යැවීම)
+  async redirects() {
     return [
       {
         source: '/',
         destination: '/dees',
-        permanent: true, // SEO walata hodai
+        permanent: true,
       },
-    ]
+    ];
   },
-  // Hirusha, 'serverComponentsExternalPackages' වෙනුවට දැන් පාවිච්චි කරන්නේ මේක:
+
+  // 3. Prisma වැනි Packages සඳහා configuration
   serverExternalPackages: ["@prisma/client"],
 
-  // IP එකෙන් access කරන්න නම් මේක අනිවාර්යයි
-  allowedDevOrigins: ['192.168.1.158:3000', 'localhost:3000'],
-
-  experimental: {
-    // අවශ්‍ය නම් පමණක් වෙනත් experimental features මෙතන දාන්න
-  }
+  // 4. IP එකෙන් සහ Localhost එකෙන් access කිරීම (ඔයාගේ IP එක 192.168.1.158 ලෙස තබා ඇත)
+ experimental: {
+     // allowedDevOrigins වෙනුවට අලුත් version වල පාවිච්චි කරන්නේ මේක
+     serverActions: {
+       allowedOrigins: ['192.168.1.158:3000', 'localhost:3000'],
+     },
+ },
 };
 
 export default nextConfig;

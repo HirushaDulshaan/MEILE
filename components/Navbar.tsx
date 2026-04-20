@@ -66,6 +66,7 @@ const Navbar = () => {
                         <div className="hidden md:flex items-center gap-5 border-l border-white/20 pl-5 ml-2">
                             <button
                                 onClick={handleProfileClick}
+                                suppressHydrationWarning
                                 className="hover:text-blue-500 transition flex items-center gap-2 group"
                             >
                                 <User size={20}/>

@@ -1,5 +1,6 @@
 generator client {
   provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
 }
 
 datasource db {
@@ -14,7 +15,6 @@ model User {
   email       String   @unique
   contact     String   @unique
   password    String
-  // අලුතින් එකතු කරන fields (optional විදිහට දාන්න ප්‍රශ්නයක් නොවෙන්න)
   address1    String?
   address2    String?
   city        String?
@@ -137,7 +137,7 @@ model Size {
 // --- Inventory Management ---
 model Stock {
   id        Int      @id @default(autoincrement())
-  productId Int      // String thibbe, Int kala
+  productId Int
   product   Product  @relation(fields: [productId], references: [id])
   sizeId    Int      // String thibbe, Int kala
   size      Size     @relation(fields: [sizeId], references: [id])
@@ -147,4 +147,12 @@ model Stock {
   updatedAt DateTime @updatedAt
 
   @@unique([productId, sizeId])
-}// Product model ekatath 'stocks Stock[]' kalla add karanna amathaka karanna epa
+}
+model VerificationToken {
+  id      Int      @id @default(autoincrement())
+  email   String   @unique
+  token   String
+  expires DateTime
+
+  @@unique([email, token])
+}

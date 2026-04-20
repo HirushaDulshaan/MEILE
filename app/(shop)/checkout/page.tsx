@@ -1,13 +1,16 @@
 "use client";
 import React, { useState } from "react";
 import { useCart } from "@/app/hooks/use-cart";
-import { ChevronLeft, CreditCard, Truck, ShieldCheck, ReceiptText } from "lucide-react";
+import {ChevronLeft, CreditCard, Truck, ShieldCheck, ReceiptText, Loader2} from "lucide-react";
 import Link from "next/link";
 import { useUserStore } from "@/app/hooks/use-user-store";
+import { checkoutSchema } from "@/lib/validations/auth";
+import toast from "react-hot-toast";
 
 export default function CheckoutPage() {
     const cart = useCart();
-    const { user } = useUserStore(); // 👈 මේ පේළිය අනිවාර්යයෙන්ම එකතු කරන්න
+    const { user } = useUserStore();
+    const [loading, setLoading] = useState(false);
 
     const [shippingData, setShippingData] = useState({
         firstName: "", lastName: "", email: "", address: "", city: "", phone: "",
@@ -46,11 +49,24 @@ export default function CheckoutPage() {
     const onPlaceOrder = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        // යූසර් ලොග් වෙලා නැත්නම් ප්ලේස් ඕඩර් කරන්න දෙන්න එපා
+
+       // is users didnt sign in
         if (!user) {
-            alert("Please admin-login to place an order");
+            toast.error("Please login to place an order");
             return;
         }
+
+        // 2. Zod Validation Error Fix 👈
+        const validation = checkoutSchema.safeParse(shippingData);
+        if (!validation.success) {
+            // පළවෙනි error message එක ලස්සනට මෙහෙම ගන්න පුළුවන්
+            const firstError = validation.error.issues[0].message;
+            toast.error(firstError);
+            return;
+        }
+
+        setLoading(true); // දැන් මේක වැඩ කරනවා ✅
+
 
         try {
             const response = await fetch("/api/checkout", {
@@ -59,9 +75,12 @@ export default function CheckoutPage() {
                 body: JSON.stringify({
                     items: cart.items,
                     email: shippingData.email,
-                    userId: user.id, // දැන් මේක වැඩ කරනවා
+                    userId: user.id,
                     address: shippingData.address,
-                    phone: shippingData.phone
+                    phone: shippingData.phone,
+                    firstName: shippingData.firstName, // API එකට මේවත් යවන්න
+                    lastName: shippingData.lastName,
+                    city: shippingData.city
                 }),
             });
 
@@ -70,11 +89,12 @@ export default function CheckoutPage() {
             if (data.url) {
                 window.location.href = data.url;
             } else {
-                alert("Payment failed to initialize.");
-            }
+                toast.error("Payment failed to initialize.");            }
         } catch (error) {
             console.error("STRIPE_ERROR", error);
-            alert("Something went wrong!");
+            toast.error("Something went wrong!");
+        } finally {
+            setLoading(false); // Request එක ඉවර වුණාම loading නතර කරන්න ✅
         }
     };
     if (cart.items.length === 0) return <div className="min-h-screen flex flex-col items-center justify-center font-bold">Your cart is empty!</div>;
@@ -213,8 +233,20 @@ export default function CheckoutPage() {
                             <div className="flex justify-between text-slate-500"><span>Shipping</span><span className="font-bold text-slate-900 text-base">LKR {delivery.toLocaleString()}</span></div>
                             <div className="flex justify-between pt-4 border-t border-slate-100"><span className="text-lg font-bold text-slate-900">Total</span><span className="text-2xl font-black text-slate-900">LKR {total.toLocaleString()}</span></div>
                         </div>
-                        <button type="submit" className="w-full bg-black text-white font-black py-5 rounded-2xl mt-8 hover:bg-blue-600 transition-all shadow-xl">PLACE ORDER NOW</button>
-                    </div>
+                        <button
+                            type="submit"
+                            disabled={loading} // Load වෙන වෙලාවට බටන් එක disable කරන්න
+                            className="w-full bg-black text-white font-black py-5 rounded-2xl mt-8 hover:bg-blue-600 transition-all shadow-xl disabled:bg-slate-400 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                        >
+                            {loading ? (
+                                <>
+                                    <Loader2 className="animate-spin" size={20} />
+                                    PROCESSING...
+                                </>
+                            ) : (
+                                "PLACE ORDER NOW"
+                            )}
+                        </button>                    </div>
                 </div>
             </form>
         </main>

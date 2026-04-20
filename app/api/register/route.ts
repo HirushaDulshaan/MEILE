@@ -1,56 +1,42 @@
 import { db } from "@/lib/db";
 import { NextResponse } from "next/server";
 import { registerSchema } from "@/lib/validations/auth";
-import logger from "@/lib/logger"; // 👈 Logger එක import කරන්න
+import { sendOTP } from "@/lib/mail";
 
 export async function POST(request: Request) {
     try {
         const body = await request.json();
-
-        // 1. Zod Validation
         const validation = registerSchema.safeParse(body);
-        if (!validation.success) {
-            logger.warn(`Validation failed for registration attempt: ${JSON.stringify(validation.error.format())}`);
-            return new NextResponse("Invalid data provided", { status: 400 });
-        }
 
-        const { email, firstName, lastName, contact, password } = validation.data;
+        if (!validation.success) return new NextResponse("Invalid data", { status: 400 });
 
-        // 2. Email සහ Contact Number පරීක්ෂාව
+        const { email, contact } = validation.data;
+
+        // 1. කලින් යූසර් ඉන්නවද බලනවා
         const existingUser = await db.user.findFirst({
-            where: {
-                OR: [
-                    { email: email },
-                    { contact: contact }
-                ]
-            }
+            where: { OR: [{ email }, { contact }] }
         });
 
-        if (existingUser) {
-            const reason = existingUser.email === email ? "Email already registered" : "Contact already in use";
-            logger.info(`Registration blocked: ${reason} (${email})`); // 👈 දැනට තියෙන දත්ත නිසා බ්ලොක් වූ බව ලොග් කිරීම
-            return new NextResponse(reason, { status: 400 });
-        }
+        if (existingUser) return new NextResponse("Email or Contact already in use", { status: 400 });
 
-        // 3. User සෑදීම
-        const user = await db.user.create({
-            data: {
-                email,
-                firstName,
-                lastName,
-                contact,
-                password,
-            },
+        // 2. OTP එකක් හදනවා
+        const otp = Math.floor(100000 + Math.random() * 900000).toString();
+        const expires = new Date(Date.now() + 10 * 60 * 1000); // 10 min
+
+        // 3. OTP එක DB එකේ සේව් කරනවා
+        await db.verificationToken.upsert({
+            where: { email },
+            update: { token: otp, expires },
+            create: { email, token: otp, expires }
         });
 
-        // ✅ සාර්ථක රෙජිස්ට්‍රේෂන් එකක් ලොග් කිරීම
-        logger.info(`New user created: ${email} | Name: ${firstName} ${lastName}`);
+        // 4. ඊමේල් එක යවනවා
+        const emailSent = await sendOTP(email, otp);
+        if (!emailSent) return new NextResponse("Failed to send OTP", { status: 500 });
 
-        return NextResponse.json(user);
+        return NextResponse.json({ message: "OTP Sent" });
 
     } catch (error: any) {
-        // ❌ සර්වර් එකේ ඇතිවන errors ලොග් ෆයිල් එකට සේව් කිරීම
-        logger.error(`REGISTER_API_ERROR: ${error.message}`, { stack: error.stack });
-        return new NextResponse("Internal Server Error", { status: 500 });
+        return new NextResponse("Internal Error", { status: 500 });
     }
 }
