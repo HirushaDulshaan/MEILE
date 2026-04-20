@@ -2,15 +2,14 @@
 
 import React from "react";
 import Image from "next/image";
-
-// Swiper Components සහ Styles
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, Pagination, Navigation } from "swiper/modules";
+
+// Swiper styles
 import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/navigation";
 
-// Images Import
 import banner1 from "@/public/banner/banner1.webp";
 import banner2 from "@/public/banner/banner2.webp";
 import banner3 from "@/public/banner/banner3.webp";
@@ -23,7 +22,7 @@ const Hero = () => {
     ];
 
     return (
-        <div className="h-[80vh] w-full bg-black overflow-hidden relative">
+        <section className="relative w-full bg-white">
             <Swiper
                 spaceBetween={0}
                 centeredSlides={true}
@@ -38,21 +37,20 @@ const Hero = () => {
                 }}
                 navigation={true}
                 modules={[Autoplay, Pagination, Navigation]}
-                className="mySwiper h-full"
+                className="mySwiper w-full h-auto" // Height එක auto කළා
             >
                 {slides.map((slide) => (
                     <SwiperSlide key={slide.id}>
-                        <div className="relative h-full w-full">
+                        <div className="w-full relative leading-[0]">
                             <Image
                                 src={slide.image}
                                 alt={`Meili Banner ${slide.id}`}
-                                fill
-                                // Priority eka slide 1 ta aniwaaryenma danna
+                                width={1920} // මුල් පින්තූරයේ width එක දාන්න
+                                height={1080} // මුල් පින්තූරයේ height එක දාන්න
                                 priority={slide.id === 1}
-                                // LCP fix ekata meka godak wadagath
-                                fetchPriority={slide.id === 1 ? "high" : "auto"}
-                                className="object-cover"
+                                className="w-full h-auto object-contain" // object-contain මගින් සම්පූර්ණ පින්තූරය පෙන්වයි
                                 sizes="100vw"
+                                quality={100}
                             />
                         </div>
                     </SwiperSlide>
@@ -61,21 +59,37 @@ const Hero = () => {
 
             {/* Custom Styles */}
             <style jsx global>{`
+                :root {
+                    --swiper-theme-color: #ffffff;
+                    --swiper-navigation-size: 20px;
+                }
+                .swiper-pagination {
+                    bottom: 10px !important;
+                }
+                .swiper-pagination-bullet {
+                    background: rgba(255, 255, 255, 0.6);
+                    width: 8px;
+                    height: 8px;
+                }
                 .swiper-pagination-bullet-active {
                     background: white !important;
+                    width: 20px;
+                    border-radius: 5px;
                 }
                 .swiper-button-next, .swiper-button-prev {
                     color: white !important;
-                    transform: scale(0.5);
+                    opacity: 0.5;
                 }
-                /* Hide navigation on mobile if needed */
-                @media (max-width: 640px) {
+                .swiper-button-next:after, .swiper-button-prev:after {
+                    font-size: 18px !important;
+                }
+                @media (max-width: 768px) {
                     .swiper-button-next, .swiper-button-prev {
                         display: none;
                     }
                 }
             `}</style>
-        </div>
+        </section>
     );
 };
 

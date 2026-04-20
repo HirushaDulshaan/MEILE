@@ -2,19 +2,19 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { User, LogOut, ShoppingCart, Search, X, Menu } from "lucide-react"; // ✅ Menu icon එක ගත්තා
+import { User, LogOut, ShoppingCart, Search, X, Menu } from "lucide-react";
 import SearchBar from "@/components/SearchBar";
 import { useUserStore } from "@/app/hooks/use-user-store";
 import { useRouter } from "next/navigation";
 
 const Navbar = () => {
     const [isSearchOpen, setIsSearchOpen] = useState(false);
-    const [isMenuOpen, setIsMenuOpen] = useState(false); // ✅ Mobile menu state එක
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
     const { user, logout } = useUserStore();
     const router = useRouter();
 
     const handleProfileClick = () => {
-        setIsMenuOpen(false); // Menu එක වහන්න
+        setIsMenuOpen(false);
         if (user) {
             router.push("/profile");
         } else {
@@ -27,12 +27,12 @@ const Navbar = () => {
             <nav className="bg-black px-6 py-5 shadow-md uppercase tracking-widest text-white relative z-50 border-b border-white/5">
                 <div className="max-w-7xl mx-auto flex justify-between items-center">
 
-                    {/* MOBILE MENU BUTTON - පේන්නේ mobile වලදී විතරයි */}
+                    {/* MOBILE MENU BUTTON */}
                     <button
                         className="md:hidden p-1 hover:text-blue-500 transition"
-                        onClick={() => setIsMenuOpen(!isMenuOpen)}
+                        onClick={() => setIsMenuOpen(true)}
                     >
-                        {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+                        <Menu size={24} />
                     </button>
 
                     {/* LOGO */}
@@ -40,7 +40,7 @@ const Navbar = () => {
                         M E I L I
                     </Link>
 
-                    {/* MAIN LINKS - Desktop Only */}
+                    {/* MAIN LINKS - Desktop */}
                     {!isSearchOpen && (
                         <div className="hidden md:flex items-center gap-10 text-[11px] font-black animate-in fade-in duration-500">
                             <Link href="/mens-wear" className="hover:text-blue-500 transition tracking-[0.2em]">MEN</Link>
@@ -51,10 +51,7 @@ const Navbar = () => {
                     {/* ACTIONS */}
                     <div className="flex items-center gap-4 md:gap-6">
                         {!isSearchOpen && (
-                            <button
-                                onClick={() => setIsSearchOpen(true)}
-                                className="hover:text-blue-500 transition p-1"
-                            >
+                            <button onClick={() => setIsSearchOpen(true)} className="hover:text-blue-500 transition p-1">
                                 <Search size={20}/>
                             </button>
                         )}
@@ -64,11 +61,7 @@ const Navbar = () => {
                         </Link>
 
                         <div className="hidden md:flex items-center gap-5 border-l border-white/20 pl-5 ml-2">
-                            <button
-                                onClick={handleProfileClick}
-                                suppressHydrationWarning
-                                className="hover:text-blue-500 transition flex items-center gap-2 group"
-                            >
+                            <button onClick={handleProfileClick} className="hover:text-blue-500 transition flex items-center gap-2 group">
                                 <User size={20}/>
                                 {user?.firstName && (
                                     <span className="text-[10px] font-black uppercase tracking-widest transition group-hover:text-blue-500">
@@ -79,12 +72,8 @@ const Navbar = () => {
 
                             {user && (
                                 <button
-                                    onClick={() => {
-                                        logout();
-                                        router.push("/login");
-                                    }}
+                                    onClick={() => { logout(); router.push("/login"); }}
                                     className="hover:text-red-500 transition ml-2 p-1"
-                                    title="Logout"
                                 >
                                     <LogOut size={18}/>
                                 </button>
@@ -106,22 +95,60 @@ const Navbar = () => {
                 )}
             </nav>
 
-            {/* ✅ MOBILE DRAWER - Mobile එකේ Menu එක click කළාම එන එක */}
+            {/* ✅ FULL SCREEN MOBILE DRAWER */}
+            {/* ✅ FULL SCREEN MOBILE DRAWER */}
             {isMenuOpen && (
-                <div className="fixed inset-0 top-[72px] bg-black/95 z-40 md:hidden animate-in slide-in-from-left duration-300 backdrop-blur-md">
-                    <div className="flex flex-col p-10 gap-8">
-                        <Link onClick={() => setIsMenuOpen(false)} href="/mens-wear" className="text-2xl font-black tracking-widest border-b border-white/10 pb-4">MEN</Link>
-                        <Link onClick={() => setIsMenuOpen(false)} href="/womens-wear" className="text-2xl font-black tracking-widest border-b border-white/10 pb-4">WOMEN</Link>
+                <div className="fixed inset-0 bg-black z-[110] md:hidden flex flex-col animate-in slide-in-from-left duration-300">
+                    {/* Header - මෙහි blur හෝ අමතර අඳුරු ගතියක් නැත */}
+                    <div className="flex justify-between items-center px-6 py-5 border-b border-white/10">
+                        <button onClick={() => setIsMenuOpen(false)} className="p-1 text-white">
+                            <X size={26} />
+                        </button>
 
-                        <div className="mt-4 flex flex-col gap-6">
-                            <button onClick={handleProfileClick} className="flex items-center gap-4 text-sm font-bold tracking-[0.2em] text-blue-500">
-                                <User size={20} /> {user ? `PROFILE (${user.firstName})` : "LOGIN / REGISTER"}
+                        <span className="text-xl font-black tracking-tighter text-white">M E I L I</span>
+
+                        <div className="flex gap-4">
+                            <button onClick={() => { setIsSearchOpen(true); setIsMenuOpen(false); }}>
+                                <Search size={22} className="text-white" />
+                            </button>
+                            <Link href="/cart" onClick={() => setIsMenuOpen(false)}>
+                                <ShoppingCart size={22} className="text-white" />
+                            </Link>
+                        </div>
+                    </div>
+
+                    {/* Menu Content */}
+                    <div className="flex flex-col p-8 pt-10 gap-2">
+                        <Link
+                            onClick={() => setIsMenuOpen(false)}
+                            href="/mens-wear"
+                            className="text-[32px] font-black tracking-tighter text-white py-5 border-b border-white/5 active:text-blue-500 transition-colors"
+                        >
+                            MEN
+                        </Link>
+                        <Link
+                            onClick={() => setIsMenuOpen(false)}
+                            href="/womens-wear"
+                            className="text-[32px] font-black tracking-tighter text-white py-5 border-b border-white/5 active:text-blue-500 transition-colors"
+                        >
+                            WOMEN
+                        </Link>
+
+                        <div className="mt-12 flex flex-col gap-8">
+                            {/* Profile Link */}
+                            <button
+                                onClick={handleProfileClick}
+                                className="flex items-center gap-4 text-[14px] font-bold tracking-[0.2em] text-blue-400 uppercase"
+                            >
+                                <User size={20} />
+                                {user ? `PROFILE (${user.firstName})` : "LOGIN / REGISTER"}
                             </button>
 
+                            {/* Logout Button */}
                             {user && (
                                 <button
                                     onClick={() => { logout(); router.push("/login"); setIsMenuOpen(false); }}
-                                    className="flex items-center gap-4 text-sm font-bold tracking-[0.2em] text-red-500"
+                                    className="flex items-center gap-4 text-[14px] font-bold tracking-[0.2em] text-red-500 uppercase"
                                 >
                                     <LogOut size={20} /> LOGOUT
                                 </button>
