@@ -29,7 +29,8 @@ export async function GET() {
         });
 
         // දත්ත දින අනුව group කිරීම
-        const chartData = chartDataRaw.reduce((acc: any, order) => {
+        // මෙතන (acc: any, order: any) ලෙස වෙනස් කර ඇත (Fix for TypeScript error)
+        const chartData = chartDataRaw.reduce((acc: any, order: any) => {
             const date = order.createdAt.toLocaleDateString('en-US', { weekday: 'short' });
             const existing = acc.find((item: any) => item.day === date);
             if (existing) {
