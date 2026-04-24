@@ -35,7 +35,7 @@ export default function AdminLoginPage() {
             });
 
             if (res.ok) {
-                router.push("/admin/dashboard");
+                router.push("/dashboard");
             } else {
                 const errorData = await res.json();
                 // API එකෙන් එන errors (උදා: Invalid credentials) alert එකක් විදිහට පෙන්වනවා

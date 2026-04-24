@@ -3,10 +3,12 @@ import React from "react";
 import {ArrowRight, Minus, Plus, ShoppingBag, Trash2} from "lucide-react";
 import Link from "next/link";
 import {useCart} from "@/app/hooks/use-cart";
+import {useUserStore} from "@/app/hooks/use-user-store";
 
 export default function CartPage() {
 
     const cart = useCart();
+    const { user } = useUserStore();
 
 
     const subtotal = cart.items.reduce((acc, item) => acc + item.price * item.qty, 0);
@@ -117,10 +119,10 @@ export default function CartPage() {
                             </div>
                         </div>
 
-                        <Link href="/checkout">
+                        <Link href={user ? "/checkout" : "/login"}>
                             <button
                                 className="w-full bg-blue-600 text-white font-black py-5 rounded-2xl mt-8 flex items-center justify-center gap-3 hover:bg-white hover:text-black transition-all active:scale-95 group">
-                                CHECKOUT NOW
+                                {user ? "CHECKOUT NOW" : "LOGIN TO CHECKOUT"}
                                 <ArrowRight size={20} className="group-hover:translate-x-2 transition-transform"/>
                             </button>
                         </Link>

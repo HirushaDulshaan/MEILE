@@ -1,15 +1,15 @@
 "use client";
-import React, { useState } from "react";
-import { useCart } from "@/app/hooks/use-cart";
-import {ChevronLeft, CreditCard, Truck, ShieldCheck, ReceiptText, Loader2} from "lucide-react";
+import React, {useState} from "react";
+import {useCart} from "@/app/hooks/use-cart";
+import {ChevronLeft, Loader2, Truck} from "lucide-react";
 import Link from "next/link";
-import { useUserStore } from "@/app/hooks/use-user-store";
-import { checkoutSchema } from "@/lib/validations/auth";
+import {useUserStore} from "@/app/hooks/use-user-store";
+import {checkoutSchema} from "@/lib/validations/auth";
 import toast from "react-hot-toast";
 
 export default function CheckoutPage() {
     const cart = useCart();
-    const { user } = useUserStore();
+    const {user} = useUserStore();
     const [loading, setLoading] = useState(false);
 
     const [shippingData, setShippingData] = useState({
@@ -23,22 +23,22 @@ export default function CheckoutPage() {
     const [sameAsShipping, setSameAsShipping] = useState(false);
 
     const handleShippingChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = e.target;
-        setShippingData(prev => ({ ...prev, [name]: value }));
+        const {name, value} = e.target;
+        setShippingData(prev => ({...prev, [name]: value}));
         if (sameAsShipping) {
-            setBillingData(prev => ({ ...prev, [name]: value }));
+            setBillingData(prev => ({...prev, [name]: value}));
         }
     };
 
     const handleBillingChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setBillingData({ ...billingData, [e.target.name]: e.target.value });
+        setBillingData({...billingData, [e.target.name]: e.target.value});
     };
 
     const toggleSameAsShipping = () => {
         const nextState = !sameAsShipping;
         setSameAsShipping(nextState);
         if (nextState) {
-            setBillingData({ ...shippingData });
+            setBillingData({...shippingData});
         }
     };
 
@@ -50,7 +50,7 @@ export default function CheckoutPage() {
         e.preventDefault();
 
 
-       // is users didnt sign in
+        // is users didnt sign in
         if (!user) {
             toast.error("Please login to place an order");
             return;
@@ -71,7 +71,7 @@ export default function CheckoutPage() {
         try {
             const response = await fetch("/api/checkout", {
                 method: "POST",
-                headers: { "Content-Type": "application/json" }, // Header එක අමතක කරන්න එපා
+                headers: {"Content-Type": "application/json"}, // Header එක අමතක කරන්න එපා
                 body: JSON.stringify({
                     items: cart.items,
                     email: shippingData.email,
@@ -89,7 +89,8 @@ export default function CheckoutPage() {
             if (data.url) {
                 window.location.href = data.url;
             } else {
-                toast.error("Payment failed to initialize.");            }
+                toast.error("Payment failed to initialize.");
+            }
         } catch (error) {
             console.error("STRIPE_ERROR", error);
             toast.error("Something went wrong!");
@@ -97,15 +98,17 @@ export default function CheckoutPage() {
             setLoading(false); // Request එක ඉවර වුණාම loading නතර කරන්න ✅
         }
     };
-    if (cart.items.length === 0) return <div className="min-h-screen flex flex-col items-center justify-center font-bold">Your cart is empty!</div>;
+    if (cart.items.length === 0) return <div
+        className="min-h-screen flex flex-col items-center justify-center font-bold">Your cart is empty!</div>;
 
     // Reusable input class to keep code clean and fix the white text issue
     const inputClass = "w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:border-blue-600 text-slate-950 placeholder:text-slate-400 transition-all font-medium";
 
     return (
         <main className="max-w-7xl mx-auto px-6 py-12 lg:py-20 font-sans min-h-screen">
-            <Link href="/cart" className="flex items-center gap-2 text-slate-500 hover:text-black transition-all mb-8 w-fit font-bold">
-                <ChevronLeft size={18} /> BACK TO CART
+            <Link href="/cart"
+                  className="flex items-center gap-2 text-slate-500 hover:text-black transition-all mb-8 w-fit font-bold">
+                <ChevronLeft size={18}/> BACK TO CART
             </Link>
 
             <form onSubmit={onPlaceOrder} className="grid grid-cols-1 lg:grid-cols-12 gap-16">
@@ -114,52 +117,73 @@ export default function CheckoutPage() {
                     {/* SHIPPING SECTION */}
                     <section>
                         <h2 className="text-2xl font-black text-slate-900 uppercase tracking-tighter mb-6 flex items-center gap-3">
-                            <Truck size={24} className="text-blue-600" /> Shipping Information
+                            <Truck size={24} className="text-blue-600"/> Shipping Information
                         </h2>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-6"> {/* gap-y-6 දැම්මා label එකට ඉඩ තියන්න */}
+                        <div
+                            className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-6"> {/* gap-y-6 දැම්මා label එකට ඉඩ තියන්න */}
 
                             {/* First Name */}
                             <div className="space-y-1.5">
-                                <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-2">First Name</label>
-                                <input type="text" name="firstName" placeholder="First Name" required value={shippingData.firstName} onChange={handleShippingChange} className={inputClass} />
+                                <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-2">First
+                                    Name</label>
+                                <input type="text" name="firstName" placeholder="First Name" required
+                                       value={shippingData.firstName} onChange={handleShippingChange}
+                                       className={inputClass}/>
                             </div>
 
                             {/* Last Name */}
                             <div className="space-y-1.5">
-                                <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-2">Last Name</label>
-                                <input type="text" name="lastName" placeholder="Last Name" required value={shippingData.lastName} onChange={handleShippingChange} className={inputClass} />
+                                <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-2">Last
+                                    Name</label>
+                                <input type="text" name="lastName" placeholder="Last Name" required
+                                       value={shippingData.lastName} onChange={handleShippingChange}
+                                       className={inputClass}/>
                             </div>
 
                             {/* Email Address */}
                             <div className="space-y-1.5 md:col-span-2">
-                                <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-2">Email Address</label>
-                                <input type="email" name="email" placeholder="Email Address" required value={shippingData.email} onChange={handleShippingChange} className={inputClass} />
+                                <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-2">Email
+                                    Address</label>
+                                <input type="email" name="email" placeholder="Email Address" required
+                                       value={shippingData.email} onChange={handleShippingChange}
+                                       className={inputClass}/>
                             </div>
 
                             {/* Shipping Address */}
                             <div className="space-y-1.5 md:col-span-2">
-                                <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-2">Shipping Address</label>
-                                <input type="text" name="address" placeholder="Shipping Address" required value={shippingData.address} onChange={handleShippingChange} className={inputClass} />
+                                <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-2">Shipping
+                                    Address</label>
+                                <input type="text" name="address" placeholder="Shipping Address" required
+                                       value={shippingData.address} onChange={handleShippingChange}
+                                       className={inputClass}/>
                             </div>
 
                             {/* City */}
                             <div className="space-y-1.5">
-                                <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-2">City</label>
-                                <input type="text" name="city" placeholder="City" required value={shippingData.city} onChange={handleShippingChange} className={inputClass} />
+                                <label
+                                    className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-2">City</label>
+                                <input type="text" name="city" placeholder="City" required value={shippingData.city}
+                                       onChange={handleShippingChange} className={inputClass}/>
                             </div>
 
                             {/* Phone Number */}
                             <div className="space-y-1.5">
-                                <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-2">Phone Number</label>
-                                <input type="tel" name="phone" placeholder="Phone Number" required value={shippingData.phone} onChange={handleShippingChange} className={inputClass} />
+                                <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-2">Phone
+                                    Number</label>
+                                <input type="tel" name="phone" placeholder="Phone Number" required
+                                       value={shippingData.phone} onChange={handleShippingChange}
+                                       className={inputClass}/>
                             </div>
 
                         </div>
                     </section>
 
                     {/* TOGGLE CHECKBOX */}
-                    <div className="flex items-center gap-3 bg-slate-100 p-4 rounded-2xl cursor-pointer hover:bg-slate-200 transition-all shadow-sm" onClick={toggleSameAsShipping}>
-                        <input type="checkbox" checked={sameAsShipping} onChange={toggleSameAsShipping} className="w-5 h-5 accent-blue-600 cursor-pointer" />
+                    <div
+                        className="flex items-center gap-3 bg-slate-100 p-4 rounded-2xl cursor-pointer hover:bg-slate-200 transition-all shadow-sm"
+                        onClick={toggleSameAsShipping}>
+                        <input type="checkbox" checked={sameAsShipping} onChange={toggleSameAsShipping}
+                               className="w-5 h-5 accent-blue-600 cursor-pointer"/>
                         <span className="text-sm font-bold text-slate-700 select-none uppercase tracking-wider">"Billing address same as shipping"</span>
                     </div>
 
@@ -167,44 +191,67 @@ export default function CheckoutPage() {
                     {!sameAsShipping && (
                         <section>
                             <h2 className="text-2xl font-black text-slate-900 uppercase tracking-tighter mb-6 flex items-center gap-3">
-                                <Truck size={24} className="text-blue-600" /> Billing Information
+                                <Truck size={24} className="text-blue-600"/> Billing Information
                             </h2>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-6"> {/* gap-y-6 දැම්මා label එකට ඉඩ තියන්න */}
+                            <div
+                                className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-6"> {/* gap-y-6 දැම්මා label එකට ඉඩ තියන්න */}
 
                                 {/* First Name */}
                                 <div className="space-y-1.5">
-                                    <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-2">First Name</label>
-                                    <input type="text" name="firstName" placeholder="First Name" required value={shippingData.firstName} onChange={handleShippingChange} className={inputClass} />
+                                    <label
+                                        className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-2">First
+                                        Name</label>
+                                    <input type="text" name="firstName" placeholder="First Name" required
+                                           value={shippingData.firstName} onChange={handleShippingChange}
+                                           className={inputClass}/>
                                 </div>
 
                                 {/* Last Name */}
                                 <div className="space-y-1.5">
-                                    <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-2">Last Name</label>
-                                    <input type="text" name="lastName" placeholder="Last Name" required value={shippingData.lastName} onChange={handleShippingChange} className={inputClass} />
+                                    <label
+                                        className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-2">Last
+                                        Name</label>
+                                    <input type="text" name="lastName" placeholder="Last Name" required
+                                           value={shippingData.lastName} onChange={handleShippingChange}
+                                           className={inputClass}/>
                                 </div>
 
                                 {/* Email Address */}
                                 <div className="space-y-1.5 md:col-span-2">
-                                    <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-2">Email Address</label>
-                                    <input type="email" name="email" placeholder="Email Address" required value={shippingData.email} onChange={handleShippingChange} className={inputClass} />
+                                    <label
+                                        className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-2">Email
+                                        Address</label>
+                                    <input type="email" name="email" placeholder="Email Address" required
+                                           value={shippingData.email} onChange={handleShippingChange}
+                                           className={inputClass}/>
                                 </div>
 
                                 {/* Shipping Address */}
                                 <div className="space-y-1.5 md:col-span-2">
-                                    <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-2">Shipping Address</label>
-                                    <input type="text" name="address" placeholder="Shipping Address" required value={shippingData.address} onChange={handleShippingChange} className={inputClass} />
+                                    <label
+                                        className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-2">Shipping
+                                        Address</label>
+                                    <input type="text" name="address" placeholder="Shipping Address" required
+                                           value={shippingData.address} onChange={handleShippingChange}
+                                           className={inputClass}/>
                                 </div>
 
                                 {/* City */}
                                 <div className="space-y-1.5">
-                                    <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-2">City</label>
-                                    <input type="text" name="city" placeholder="City" required value={shippingData.city} onChange={handleShippingChange} className={inputClass} />
+                                    <label
+                                        className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-2">City</label>
+                                    <input type="text" name="city" placeholder="City" required value={shippingData.city}
+                                           onChange={handleShippingChange} className={inputClass}/>
                                 </div>
 
                                 {/* Phone Number */}
                                 <div className="space-y-1.5">
-                                    <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-2">Phone Number</label>
-                                    <input type="tel" name="phone" placeholder="Phone Number" required value={shippingData.phone} onChange={handleShippingChange} className={inputClass} />
+                                    <label
+                                        className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-2">Phone
+                                        Number</label>
+                                    <input type="tel" name="phone" placeholder="Phone Number" required
+                                           value={shippingData.phone} onChange={handleShippingChange}
+                                           className={inputClass}/>
                                 </div>
 
                             </div>
@@ -219,7 +266,8 @@ export default function CheckoutPage() {
                         <div className="max-h-[300px] overflow-y-auto pr-2 custom-scrollbar space-y-4 mb-6">
                             {cart.items.map((item) => (
                                 <div key={`${item.id}-${item.size}`} className="flex gap-4">
-                                    <div className="w-16 h-20 bg-slate-100 rounded-xl overflow-hidden shrink-0"><img src={item.image} className="w-full h-full object-cover" alt={item.name} /></div>
+                                    <div className="w-16 h-20 bg-slate-100 rounded-xl overflow-hidden shrink-0"><img
+                                        src={item.image} className="w-full h-full object-cover" alt={item.name}/></div>
                                     <div className="flex-1 min-w-0">
                                         <h4 className="font-bold text-sm text-slate-900 truncate">{item.name}</h4>
                                         <p className="text-[10px] text-slate-500 font-bold uppercase tracking-wider mt-1">{item.size} × {item.qty}</p>
@@ -229,9 +277,15 @@ export default function CheckoutPage() {
                             ))}
                         </div>
                         <div className="space-y-3 border-t border-slate-100 pt-6 text-sm">
-                            <div className="flex justify-between text-slate-500"><span>Subtotal</span><span className="font-bold text-slate-900 text-base">LKR {subtotal.toLocaleString()}</span></div>
-                            <div className="flex justify-between text-slate-500"><span>Shipping</span><span className="font-bold text-slate-900 text-base">LKR {delivery.toLocaleString()}</span></div>
-                            <div className="flex justify-between pt-4 border-t border-slate-100"><span className="text-lg font-bold text-slate-900">Total</span><span className="text-2xl font-black text-slate-900">LKR {total.toLocaleString()}</span></div>
+                            <div className="flex justify-between text-slate-500"><span>Subtotal</span><span
+                                className="font-bold text-slate-900 text-base">LKR {subtotal.toLocaleString()}</span>
+                            </div>
+                            <div className="flex justify-between text-slate-500"><span>Shipping</span><span
+                                className="font-bold text-slate-900 text-base">LKR {delivery.toLocaleString()}</span>
+                            </div>
+                            <div className="flex justify-between pt-4 border-t border-slate-100"><span
+                                className="text-lg font-bold text-slate-900">Total</span><span
+                                className="text-2xl font-black text-slate-900">LKR {total.toLocaleString()}</span></div>
                         </div>
                         <button
                             type="submit"
@@ -240,13 +294,14 @@ export default function CheckoutPage() {
                         >
                             {loading ? (
                                 <>
-                                    <Loader2 className="animate-spin" size={20} />
+                                    <Loader2 className="animate-spin" size={20}/>
                                     PROCESSING...
                                 </>
                             ) : (
                                 "PLACE ORDER NOW"
                             )}
-                        </button>                    </div>
+                        </button>
+                    </div>
                 </div>
             </form>
         </main>

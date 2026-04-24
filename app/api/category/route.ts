@@ -23,7 +23,7 @@ export async function GET(req: Request) {
     }
 }
 
-// 2. POST Method
+// 2. POST Method (Updated with name check)
 export async function POST(req: Request) {
     try {
         const body = await req.json();
@@ -33,10 +33,19 @@ export async function POST(req: Request) {
             return new NextResponse("Missing fields", { status: 400 });
         }
 
+
+        const existing = await db.category.findFirst({
+            where: { name: categoryName }
+        });
+
+        if (existing) {
+            return new NextResponse("Category name already exists", { status: 400 });
+        }
+
         const newCategory = await db.category.create({
             data: {
                 name: categoryName,
-                sectionId: Number(sectionId) // ID eka Number kala
+                sectionId: Number(sectionId)
             }
         });
         return NextResponse.json(newCategory, { status: 201 });
