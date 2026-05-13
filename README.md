@@ -12,19 +12,19 @@
 
 ## Overview
 
-**MEILE** is a full-stack, serverless M-Commerce platform engineered for high-traffic fashion retail. Built on **Next.js 15** with a **PostgreSQL (Neon)** backend and **Prisma Transactions**, it ensures data integrity during flash sales and global traffic spikes  delivering a seamless, premium shopping experience at scale.
+**MEILE** is a full-stack, serverless M-Commerce platform engineered for high-traffic fashion retail. Built on **Next.js 15** with a **PostgreSQL (Neon)** backend and **Prisma Transactions**, it ensures data integrity during flash sales and global traffic spikes delivering a seamless, premium shopping experience at scale.
 
 ---
 
 ## Features
 
 - 🛍️ **Full M-Commerce Flow** — Product browsing, cart management, and checkout
-- 💳 **Stripe Payment Integration** — Secure, real-world payment processing
+- 💳 **Stripe Payment Integration** — Secure, real world payment processing
 - 🔐 **JWT Authentication** — Stateless, secure user sessions
 - ⚡ **Serverless Architecture** — Scales automatically with demand via Vercel
 - 🗃️ **Prisma Transactions** — ACID-compliant transactions for order and inventory integrity
 - 🌐 **Neon DB (PostgreSQL)** — Serverless Postgres with instant branching
-- 🧠 **Zustand State Management** — Lightweight, scalable client-side state
+- 🧠 **Zustand State Management** — Lightweight, scalable client side state
 
 ---
 
