@@ -1,7 +1,6 @@
 import { db } from "@/lib/db";
 import { NextResponse } from "next/server";
 
-// 1. GET Method
 export async function GET(req: Request) {
     try {
         const { searchParams } = new URL(req.url);
@@ -9,7 +8,6 @@ export async function GET(req: Request) {
 
         const categories = await db.category.findMany({
             where: {
-                // Dan sectionId eka Int nisa query parameter ekath Number() karanna ona
                 ...(sectionId ? { sectionId: Number(sectionId) } : {})
             },
             include: { section: true },
@@ -62,10 +60,10 @@ export async function PUT(req: Request) {
         const { id, categoryName, sectionId } = body;
 
         const updated = await db.category.update({
-            where: { id: Number(id) }, // ID eka Number kala
+            where: { id: Number(id) },
             data: {
                 name: categoryName,
-                sectionId: Number(sectionId) // Relation ID eka Number kala
+                sectionId: Number(sectionId)
             }
         });
         return NextResponse.json(updated);

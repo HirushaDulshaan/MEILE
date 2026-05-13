@@ -3,7 +3,6 @@ import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
-// ... imports ...
 
 export async function POST(req: Request) {
     try {
@@ -15,12 +14,10 @@ export async function POST(req: Request) {
         if (!user) return new NextResponse("User not found", { status: 401 });
         if (user.role !== "ADMIN") return new NextResponse("Admins Only", { status: 403 });
 
-        // ✅ Testing නිසා bcrypt නැතුව කෙළින්ම චෙක් කරනවා
         if (user.password !== password) {
             return new NextResponse("Invalid credentials", { status: 401 });
         }
 
-        // Token එක හදන කොටස පරණ විදිහටම තියන්න
         const token = jwt.sign(
             { id: user.id, email: user.email, role: user.role },
             process.env.JWT_SECRET!,

@@ -5,11 +5,9 @@ import Image from "next/image";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, Pagination, Navigation } from "swiper/modules";
 
-// Swiper styles
 import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/navigation";
-
 import banner1 from "@/public/banner/banner1.webp";
 import banner2 from "@/public/banner/banner2.webp";
 import banner3 from "@/public/banner/banner3.webp";
@@ -37,7 +35,7 @@ const Hero = () => {
                 }}
                 navigation={true}
                 modules={[Autoplay, Pagination, Navigation]}
-                className="mySwiper w-full h-auto" // Height එක auto කළා
+                className="mySwiper w-full h-auto"
             >
                 {slides.map((slide) => (
                     <SwiperSlide key={slide.id}>
@@ -45,10 +43,10 @@ const Hero = () => {
                             <Image
                                 src={slide.image}
                                 alt={`Meili Banner ${slide.id}`}
-                                width={1920} // මුල් පින්තූරයේ width එක දාන්න
-                                height={1080} // මුල් පින්තූරයේ height එක දාන්න
+                                width={1920}
+                                height={1080}
                                 priority={slide.id === 1}
-                                className="w-full h-auto object-contain" // object-contain මගින් සම්පූර්ණ පින්තූරය පෙන්වයි
+                                className="w-full h-auto object-contain"
                                 sizes="100vw"
                                 quality={100}
                             />

@@ -10,9 +10,9 @@ export default function WomensProductsPage() {
     const [sizes, setSizes] = useState<any[]>([]);
     const [colors, setColors] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
-    const [isDrawerOpen, setIsDrawerOpen] = useState(false); // Mobile Drawer State
+    const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
-    const sectionId = 2; // Women's Section
+    const sectionId = 2;
 
     const [openFilters, setOpenFilters] = useState({
         category: true,
@@ -87,7 +87,6 @@ export default function WomensProductsPage() {
                     </div>
 
                     <div className="flex items-center gap-3">
-                        {/* MOBILE FILTER BUTTON */}
                         <button
                             onClick={() => setIsDrawerOpen(true)}
                             className="lg:hidden flex items-center gap-2 bg-slate-900 text-white px-5 py-3 rounded-2xl text-xs font-black uppercase tracking-widest shadow-lg active:scale-95 transition-all"
@@ -109,7 +108,6 @@ export default function WomensProductsPage() {
 
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
 
-                    {/* FILTER SIDEBAR (Responsive Drawer) */}
                     <aside className={`
                         fixed inset-0 z-[100] bg-black/40 lg:relative lg:inset-auto lg:z-auto lg:bg-transparent lg:col-span-2
                         transition-opacity duration-300

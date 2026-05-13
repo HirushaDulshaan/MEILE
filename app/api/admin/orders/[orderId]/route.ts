@@ -1,13 +1,12 @@
 import { db } from "@/lib/db";
 import { NextResponse } from "next/server";
 
-// app/api/admin/orders/[orderId]/route.ts
 export async function PATCH(
     req: Request,
-    { params }: { params: Promise<{ orderId: string }> } // Promise එකක් විදිහට ගන්න
+    { params }: { params: Promise<{ orderId: string }> }
 ) {
     try {
-        const { orderId } = await params; // await කරන්න
+        const { orderId } = await params;
         const body = await req.json();
         const { status } = body;
 

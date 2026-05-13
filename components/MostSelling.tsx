@@ -12,7 +12,6 @@ export default function MostSelling() {
     useEffect(() => {
         const fetchBestSellers = async () => {
             try {
-                // ✅ API එකෙන් 'most-selling' ටයිප් එකේ ප්‍රොඩක්ට් 5ක් ගනිමු
                 const res = await fetch("/api/products?type=most-selling");
                 const data = await res.json();
                 setProducts(data.slice(0, 5));
@@ -55,7 +54,6 @@ export default function MostSelling() {
                 </Link>
             </div>
 
-            {/* Products Grid (Row of 5) */}
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5">
                 {products.map((product, index) => (
                     <ProductCard key={product.id} data={product} index={index} />

@@ -14,7 +14,6 @@ export default function CollectionPage() {
     const [dbColors, setDbColors] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
 
-    // ✅ Collapse States - මුලින්ම ඕන ඒවා true/false කරලා තියාගන්න පුළුවන්
     const [openFilters, setOpenFilters] = useState({
         size: true,
         color: true
@@ -50,7 +49,6 @@ export default function CollectionPage() {
         if (slug) fetchAllData();
     }, [slug]);
 
-    // ✅ Toggle Function
     const toggleFilter = (section: keyof typeof openFilters) => {
         setOpenFilters(prev => ({ ...prev, [section]: !prev[section] }));
     };
@@ -69,7 +67,6 @@ export default function CollectionPage() {
 
     return (
         <main className="min-h-screen bg-[#F8FAFC] pb-20">
-            {/* Header ... (පරණ කෝඩ් එකමයි) */}
             <div className="bg-white border-b border-slate-100 mb-10 pt-16 pb-10 px-6">
                 <div className="max-w-[1440px] mx-auto flex flex-col md:flex-row justify-between items-end gap-6">
                     <h1 className="text-5xl font-black tracking-tighter text-slate-900 uppercase">{title}</h1>
@@ -91,7 +88,7 @@ export default function CollectionPage() {
                         <Filter size={16} /> Filters
                     </div>
 
-                    {/* ✅ SIZE FILTER (Collapsible) */}
+                    {/* SIZE FILTER */}
                     <div className="bg-white rounded-[1.5rem] border border-slate-100 overflow-hidden shadow-sm">
                         <button
                             onClick={() => toggleFilter('size')}
@@ -111,7 +108,6 @@ export default function CollectionPage() {
                         )}
                     </div>
 
-                    {/* ✅ COLOR FILTER (Collapsible) */}
                     <div className="bg-white rounded-[1.5rem] border border-slate-100 overflow-hidden shadow-sm">
                         <button
                             onClick={() => toggleFilter('color')}
@@ -132,7 +128,7 @@ export default function CollectionPage() {
                     </div>
                 </aside>
 
-                {/* PRODUCT GRID ... (පරණ කෝඩ් එකමයි) */}
+
                 <div className="lg:col-span-10">
                     {loading ? (
                         <div className="flex flex-col items-center py-24 gap-4">

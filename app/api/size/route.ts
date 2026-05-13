@@ -1,11 +1,10 @@
 import { db } from "@/lib/db";
 import { NextResponse } from "next/server";
 
-// 1. GET: All Sizes
 export async function GET() {
     try {
         const sizes = await db.size.findMany({
-            orderBy: { id: 'asc' } // Dan ID eka Integer nisa asc (1, 2, 3...) danna puluwan
+            orderBy: { id: 'asc' }
         });
         return NextResponse.json(sizes);
     } catch (error) {
@@ -14,7 +13,6 @@ export async function GET() {
     }
 }
 
-// 2. POST: Create Size
 export async function POST(req: Request) {
     try {
         const body = await req.json();
@@ -40,7 +38,6 @@ export async function POST(req: Request) {
     }
 }
 
-// 3. PUT: Update Size
 export async function PUT(req: Request) {
     try {
         const body = await req.json();
@@ -49,7 +46,7 @@ export async function PUT(req: Request) {
         if (!id) return NextResponse.json({ error: "ID required" }, { status: 400 });
 
         const updatedSize = await db.size.update({
-            where: { id: Number(id) }, // 👈 Dan ID eka Integer nisa Number() aniwaaryayi
+            where: { id: Number(id) },
             data: {
                 sizeCode,
                 sizeName,

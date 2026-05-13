@@ -4,7 +4,7 @@ import { Layers, Save, Edit, RotateCcw, Loader2 } from "lucide-react";
 
 export default function SectionManagement() {
     const [formData, setFormData] = useState({
-        id: null as number | null, // Dan ID eka Number
+        id: null as number | null,
         sectionName: "",
     });
 

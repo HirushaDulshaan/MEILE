@@ -11,30 +11,24 @@ const AdminNavbar = () => {
             <nav className="bg-black px-6 py-5 shadow-lg uppercase tracking-widest text-white">
                 <div className="max-w-7xl mx-auto flex justify-between items-center">
 
-                    {/* Logo */}
                     <Link href="/dashboard" className="text-2xl font-black hover:text-gray-300 transition">
                         D E E S <span className="text-[10px] tracking-normal font-light bg-white text-black px-2 py-0.5 ml-2 rounded">ADMIN</span>
                     </Link>
 
-                    {/* Desktop Links */}
                     <div className="hidden md:flex items-center gap-10 text-[13px] font-bold">
 
-                        {/* ✅ Products Dropdown */}
                         <div className="relative group py-2">
                             <button className="flex items-center gap-2 hover:text-gray-400 transition focus:outline-none">
                                 <Package size={16} /> Products <ChevronDown size={14} />
                             </button>
 
-                            {/* Dropdown Menu */}
                             <div className="absolute top-full left-0 w-48 hidden group-hover:block pt-4 z-50">
                                 <div className="bg-white text-black rounded-xl shadow-2xl py-3 border border-gray-100">
 
-                                    {/* 1. All Products - දැනට තියෙන ඒව බලන්න */}
                                     <Link href="/view-products" className="block px-6 py-2 hover:bg-gray-100 transition normal-case font-semibold">
                                         All Products
                                     </Link>
 
-                                    {/* 2. Save Product - අලුතින් ඇඩ් කරන්න */}
                                     <Link href="/products" className="block px-6 py-2 hover:bg-gray-100 transition normal-case font-semibold">
                                         Save Product
                                     </Link>
@@ -53,7 +47,6 @@ const AdminNavbar = () => {
                             <ShoppingBag size={16} /> Orders
                         </Link>
 
-                        {/* Registration Dropdown */}
                         <div className="relative group py-2">
                             <button className="flex items-center gap-2 hover:text-gray-400 transition focus:outline-none">
                                 <Settings size={16} /> Registration <ChevronDown size={14} />
@@ -78,7 +71,6 @@ const AdminNavbar = () => {
                         </div>
                     </div>
 
-                    {/* User Icon */}
                     <div className="flex items-center gap-4 border-l border-gray-800 pl-6">
                         <User size={20} className="cursor-pointer hover:text-gray-400" />
                         <LogOut size={20} className="cursor-pointer hover:text-red-500 transition" />

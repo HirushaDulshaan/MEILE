@@ -8,7 +8,6 @@ import MostSelling from "@/components/MostSelling";
 
 export default function Home() {
 
-    // ✅ Login වුණාට පස්සේ welcome toast show කරනවා
     useEffect(() => {
         const name = sessionStorage.getItem("loginSuccess");
         if (name) {

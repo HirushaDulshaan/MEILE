@@ -29,10 +29,8 @@ export default function SingleProductView({params}: { params: Promise<{ id: stri
 
 
     const onAddToCart = () => {
-        // 1. කලින් Select කරපු stock එක හොයාගන්නවා
         const selectedStock = product.stocks.find((s: any) => s.id === selectedSize);
 
-        // ❌ වැරදුණු අවස්ථාව: Size එකක් තෝරා නැති විට
         if (!selectedSize || !selectedStock) {
             toast.error("Please select a size first!", {
                 style: {
@@ -69,10 +67,8 @@ export default function SingleProductView({params}: { params: Promise<{ id: stri
         <main className="max-w-7xl mx-auto px-6 py-12 lg:py-20 font-sans text-slate-900">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
 
-                {/* LEFT: Image Gallery (Span 7 out of 12) */}
                 <div className="lg:col-span-7 flex flex-row gap-4">
 
-                    {/* Main Image View */}
                     <div
                         className="flex-1 aspect-[4/5] rounded-[2.5rem] overflow-hidden border border-slate-200 bg-white shadow-sm">
                         <img
@@ -82,7 +78,6 @@ export default function SingleProductView({params}: { params: Promise<{ id: stri
                         />
                     </div>
 
-                    {/* Vertical Thumbnails (Right/Left side) */}
                     <div className="flex flex-col gap-4 w-24 md:w-32">
                         {product.images.map((img: any, i: number) => (
                             <button
@@ -96,7 +91,6 @@ export default function SingleProductView({params}: { params: Promise<{ id: stri
                     </div>
                 </div>
 
-                {/* RIGHT: Product Details (Span 5 out of 12) */}
                 <div className="lg:col-span-5 space-y-8">
                     <div>
                         <span
@@ -117,7 +111,6 @@ export default function SingleProductView({params}: { params: Promise<{ id: stri
                         {product.description}
                     </p>
 
-                    {/* Colors Selection */}
                     <div className="space-y-3">
                         <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest">Available
                             Colors</h3>
@@ -137,7 +130,6 @@ export default function SingleProductView({params}: { params: Promise<{ id: stri
                         </div>
                     </div>
 
-                    {/* Sizes Selection */}
                     <div className="space-y-4 pt-4">
                         <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest">Select Size</h3>
                         <div className="flex flex-wrap gap-2">
@@ -145,7 +137,7 @@ export default function SingleProductView({params}: { params: Promise<{ id: stri
                                 <button
                                     key={s.id}
                                     disabled={s.qty === 0}
-                                    onClick={() => setSelectedSize(s.id)} // Hirusha, මෙතනින් තමයි ID එක Save කරගන්නේ
+                                    onClick={() => setSelectedSize(s.id)}
                                     className={`min-w-[80px] py-3 rounded-xl border-2 font-bold text-sm transition-all
                     ${s.qty === 0
                                         ? 'bg-slate-50 text-slate-300 border-slate-100 cursor-not-allowed'
@@ -160,7 +152,6 @@ export default function SingleProductView({params}: { params: Promise<{ id: stri
                         </div>
                     </div>
 
-                    {/* CTA Button */}
                     <div className="pt-6">
                         <button onClick={onAddToCart}
                             className="w-full bg-slate-900 text-white font-bold py-5 rounded-[1.5rem] flex items-center justify-center gap-3 hover:bg-blue-600 transition-all active:scale-95 shadow-xl shadow-slate-200 group">

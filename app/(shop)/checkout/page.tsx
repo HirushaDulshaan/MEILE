@@ -56,29 +56,27 @@ export default function CheckoutPage() {
             return;
         }
 
-        // 2. Zod Validation Error Fix 👈
         const validation = checkoutSchema.safeParse(shippingData);
         if (!validation.success) {
-            // පළවෙනි error message එක ලස්සනට මෙහෙම ගන්න පුළුවන්
             const firstError = validation.error.issues[0].message;
             toast.error(firstError);
             return;
         }
 
-        setLoading(true); // දැන් මේක වැඩ කරනවා ✅
+        setLoading(true);
 
 
         try {
             const response = await fetch("/api/checkout", {
                 method: "POST",
-                headers: {"Content-Type": "application/json"}, // Header එක අමතක කරන්න එපා
+                headers: {"Content-Type": "application/json"},
                 body: JSON.stringify({
                     items: cart.items,
                     email: shippingData.email,
                     userId: user.id,
                     address: shippingData.address,
                     phone: shippingData.phone,
-                    firstName: shippingData.firstName, // API එකට මේවත් යවන්න
+                    firstName: shippingData.firstName,
                     lastName: shippingData.lastName,
                     city: shippingData.city
                 }),
@@ -95,13 +93,12 @@ export default function CheckoutPage() {
             console.error("STRIPE_ERROR", error);
             toast.error("Something went wrong!");
         } finally {
-            setLoading(false); // Request එක ඉවර වුණාම loading නතර කරන්න ✅
+            setLoading(false);
         }
     };
     if (cart.items.length === 0) return <div
         className="min-h-screen flex flex-col items-center justify-center font-bold">Your cart is empty!</div>;
 
-    // Reusable input class to keep code clean and fix the white text issue
     const inputClass = "w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:border-blue-600 text-slate-950 placeholder:text-slate-400 transition-all font-medium";
 
     return (
@@ -120,7 +117,7 @@ export default function CheckoutPage() {
                             <Truck size={24} className="text-blue-600"/> Shipping Information
                         </h2>
                         <div
-                            className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-6"> {/* gap-y-6 දැම්මා label එකට ඉඩ තියන්න */}
+                            className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-6">
 
                             {/* First Name */}
                             <div className="space-y-1.5">
@@ -194,7 +191,7 @@ export default function CheckoutPage() {
                                 <Truck size={24} className="text-blue-600"/> Billing Information
                             </h2>
                             <div
-                                className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-6"> {/* gap-y-6 දැම්මා label එකට ඉඩ තියන්න */}
+                                className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-6">
 
                                 {/* First Name */}
                                 <div className="space-y-1.5">
@@ -289,7 +286,7 @@ export default function CheckoutPage() {
                         </div>
                         <button
                             type="submit"
-                            disabled={loading} // Load වෙන වෙලාවට බටන් එක disable කරන්න
+                            disabled={loading}
                             className="w-full bg-black text-white font-black py-5 rounded-2xl mt-8 hover:bg-blue-600 transition-all shadow-xl disabled:bg-slate-400 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                         >
                             {loading ? (

@@ -13,12 +13,11 @@ export default function SettingsContent() {
     const [otp, setOtp] = useState("");
     const [newPassword, setNewPassword] = useState("");
 
-    // පියවර 1: දැනට ඉන්න යූසර්ගේ ඊමේල් එකට OTP එකක් යැවීම
     const handleSendOTP = async () => {
         if (!user?.email) return;
         setLoading(true);
         try {
-            const res = await fetch("/api/auth/forgot-password", { // කලින් හදපු API එකම පාවිච්චි කළ හැකියි
+            const res = await fetch("/api/auth/forgot-password", {
                 method: "POST",
                 body: JSON.stringify({ email: user.email }),
             });
@@ -33,7 +32,6 @@ export default function SettingsContent() {
         }
     };
 
-    // පියවර 2: OTP එක චෙක් කරලා පාස්වර්ඩ් එක වෙනස් කිරීම
     const handleReset = async () => {
         if (otp.length !== 6 || !newPassword) {
             toast.error("Please fill all fields correctly.");
@@ -52,7 +50,7 @@ export default function SettingsContent() {
             });
             if (res.ok) {
                 toast.success("Password updated successfully! 🔐");
-                setStep(1); // Reset back to step 1
+                setStep(1);
                 setOtp("");
                 setNewPassword("");
             } else {

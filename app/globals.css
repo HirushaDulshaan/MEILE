@@ -24,7 +24,6 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* ✅ Input text color පමණක් fix කරන්න - background override එපා */
 input {
   color: #111827 !important;
 }

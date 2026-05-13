@@ -5,13 +5,13 @@ import { Loader2, Save, Upload, X, RefreshCw, Edit3 } from "lucide-react";
 export default function AddProductPage() {
     // 1. Form States
     const [formData, setFormData] = useState({
-        id: null as number | null, // Dan ID eka Number | null
+        id: null as number | null,
         sectionId: "",
         categoryId: "",
         title: "",
         price: "",
         description: "",
-        colorIds: [] as number[], // IDs dan Numbers
+        colorIds: [] as number[],
     });
 
     const [stockData, setStockData] = useState({
@@ -21,7 +21,6 @@ export default function AddProductPage() {
         qty: "",
     });
 
-    // 2. Data States
     const [sections, setSections] = useState<any[]>([]);
     const [categories, setCategories] = useState<any[]>([]);
     const [dbColors, setDbColors] = useState<any[]>([]);
@@ -32,7 +31,6 @@ export default function AddProductPage() {
     const [isStockLoading, setIsStockLoading] = useState(false);
     const [isEditMode, setIsEditMode] = useState(false);
 
-    // 3. Initial Data Load
     const loadInitialData = async () => {
         try {
             const [secRes, colRes, sizeRes, prodRes] = await Promise.all([
@@ -63,7 +61,6 @@ export default function AddProductPage() {
         }
     }, [formData.sectionId]);
 
-    // --- PRODUCT SELECTION LOGIC ---
     const handleProductSelect = (productId: string) => {
         if (productId === "new") {
             resetForm();
@@ -101,7 +98,6 @@ export default function AddProductPage() {
         setStockData({ ...stockData, [e.target.name]: e.target.value });
     };
 
-    // 4. Image Handle (Max 3)
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const files = Array.from(e.target.files || []);
         if (previews.length + files.length > 3) {
@@ -121,7 +117,7 @@ export default function AddProductPage() {
         setPreviews(prev => prev.filter((_, i) => i !== index));
     };
 
-    // 5. Save / Update Product Logic
+    //  Save / Update Product Logic
     const handleSaveProduct = async () => {
         if (!formData.title || !formData.price || previews.length === 0) {
             alert("Please fill required fields!");
@@ -161,18 +157,18 @@ export default function AddProductPage() {
             });
 
             if (response.ok) {
-                alert(isEditMode ? "✅ Product updated!" : "✅ Product saved!");
+                alert(isEditMode ? " Product updated!" : " Product saved!");
                 loadInitialData();
                 resetForm();
             }
         } catch (error) {
-            alert("❌ Error saving product");
+            alert(" Error saving product");
         } finally {
             setIsLoading(false);
         }
     };
 
-    // 6. Save Stock Logic
+    //  Save Stock Logic
     const handleUpdateStock = async () => {
         if (!stockData.productId || !stockData.sizeId || !stockData.qty) {
             alert("Please select product, size and quantity!");
@@ -191,11 +187,11 @@ export default function AddProductPage() {
                 }),
             });
             if (res.ok) {
-                alert("✅ Inventory Updated!");
+                alert(" Inventory Updated!");
                 setStockData(prev => ({ ...prev, sizeId: "", qty: "" }));
             }
         } catch (e) {
-            alert("❌ Error updating inventory");
+            alert(" Error updating inventory");
         } finally {
             setIsStockLoading(false);
         }

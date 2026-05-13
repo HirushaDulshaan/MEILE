@@ -10,5 +10,4 @@ export const adminLoginSchema = z.object({
         .min(6, "Password must be at least 6 characters long"),
 });
 
-// TypeScript type එකකුත් මේකෙන්ම හදාගමු
 export type AdminLoginInput = z.infer<typeof adminLoginSchema>;

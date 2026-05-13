@@ -118,16 +118,13 @@ export default function SizeManagement() {
                         </div>
                     </div>
 
-                    {/* TABLE SECTION (FIXED NESTING) */}
-                    {/* TABLE SECTION (FIXED HEIGHT WITH SCROLL) */}
+                    {/* TABLE SECTION  */}
                     <div className="lg:col-span-7 bg-white rounded-[2.5rem] border border-slate-200 overflow-hidden shadow-sm h-fit">
-                        {/* Table Header (Fixed) */}
                         <div className="bg-slate-50 border-b border-slate-100 px-8 py-4 flex justify-between items-center">
                             <h2 className="text-sm font-black uppercase tracking-widest text-slate-400">Available Sizes</h2>
                             <span className="text-[10px] font-bold bg-slate-200 px-2 py-0.5 rounded-md text-slate-600">{savedSizes.length}</span>
                         </div>
 
-                        {/* Scrollable Container */}
                         <div className="overflow-y-auto max-h-[500px] custom-scrollbar">
                             <table className="w-full text-left border-collapse">
                                 <thead className="sticky top-0 bg-slate-50 z-10 shadow-sm">

@@ -6,7 +6,6 @@ export async function POST(request: Request) {
     try {
         const body = await request.json();
 
-        // 1. Server-side Validation
         const validation = loginSchema.safeParse(body);
         if (!validation.success) {
             console.warn(`Invalid login format attempt: ${body.email}`);
@@ -15,7 +14,6 @@ export async function POST(request: Request) {
 
         const { email, password } = validation.data;
 
-        // 2. User Check
         const user = await db.user.findUnique({
             where: { email }
         });
@@ -25,7 +23,6 @@ export async function POST(request: Request) {
             return new NextResponse("User not found", { status: 404 });
         }
 
-        // 3. Password check
         if (user.password !== password) {
             console.warn(`Login failed: Incorrect password attempt for ${email}`);
             return new NextResponse("Invalid credentials", { status: 401 });
@@ -33,7 +30,6 @@ export async function POST(request: Request) {
 
         console.info(`User logged in successfully: ${email}`);
 
-        // 4. Return user data
         return NextResponse.json({
             id: user.id,
             firstName: user.firstName,
@@ -48,7 +44,6 @@ export async function POST(request: Request) {
         });
 
     } catch (error: any) {
-        // Vercel dashboard එකේ බලාගන්න මෙතන console.error දාන්න
         console.error("LOGIN_API_ERROR:", error);
         return new NextResponse("Internal Server Error", { status: 500 });
     }

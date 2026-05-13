@@ -103,12 +103,10 @@ export default function ProfileContent() {
         }
     };
 
-    // 🚀 Hydration Mismatch එක සම්පූර්ණයෙන්ම නැති කරන තැන
     if (!mounted) return null;
 
     return (
         <div className="animate-in fade-in slide-in-from-right-4 duration-500">
-            {/* ඉතිරි UI එක එහෙම්මමයි */}
             <h2 className="text-xl font-black text-slate-900 uppercase tracking-tight mb-6 border-b pb-4">
                 Edit Personal Information
             </h2>

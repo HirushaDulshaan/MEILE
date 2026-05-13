@@ -15,7 +15,7 @@ export const useUserStore = create<UserState>()(
             logout: () => set({ user: null }),
         }),
         {
-            name: 'user-storage', // localStorage එකේ save වෙන නම
+            name: 'user-storage',
             storage: createJSONStorage(() => localStorage),
         }
     )

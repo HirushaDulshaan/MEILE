@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
-import { User as UserIcon, Package, Settings, ChevronRight, LogOut, Heart } from "lucide-react"; // Heart import කළා
+import { User as UserIcon, Package, Settings, ChevronRight, LogOut, Heart } from "lucide-react";
 import { useUserStore } from "@/app/hooks/use-user-store";
 import ProfileContent from "@/components/ProfileContent";
 import OrdersContent from "@/components/OrdersContent";
@@ -18,14 +18,13 @@ function ProfilePageContent() {
         const tab = searchParams.get("tab");
         if (tab === "orders") setActiveTab("orders");
         else if (tab === "profile") setActiveTab("profile");
-        else if (tab === "wishlist") setActiveTab("wishlist"); // wishlist එකටත් auto-switch වෙන්න හැදුවා
+        else if (tab === "wishlist") setActiveTab("wishlist");
     }, [searchParams]);
 
-    // Sidebar Menu Items - මම මේවා ටිකක් පිරිසිදු කළා
     const menuItems = [
         { id: "profile", label: "My Profile", icon: <UserIcon size={18} /> },
         { id: "orders", label: "My Orders", icon: <Package size={18} /> },
-        { id: "wishlist", label: "My Wishlist", icon: <Heart size={18} /> }, // 👈 මෙතන ලේබල් එකයි අයිකන් එකයි හැදුවා
+        { id: "wishlist", label: "My Wishlist", icon: <Heart size={18} /> },
         { id: "settings", label: "Settings", icon: <Settings size={18} /> },
     ];
 
@@ -54,7 +53,7 @@ function ProfilePageContent() {
                                 onClick={() => setActiveTab(item.id)}
                                 className={`w-full flex items-center justify-between p-4 rounded-2xl transition-all duration-300 ${
                                     activeTab === item.id
-                                        ? "bg-slate-900 text-white shadow-xl shadow-slate-200 translate-x-2" // Active එක ටිකක් එළියට පැන්නුවා
+                                        ? "bg-slate-900 text-white shadow-xl shadow-slate-200 translate-x-2" 
                                         : "bg-white text-slate-500 hover:bg-slate-50 border border-slate-100"
                                 }`}
                             >
@@ -74,12 +73,11 @@ function ProfilePageContent() {
                     </nav>
                 </aside>
 
-                {/* RIGHT CONTENT AREA */}
                 <section className="lg:col-span-9 bg-white rounded-[2.5rem] border border-slate-100 p-8 md:p-12 shadow-sm min-h-[600px] relative">
                     {activeTab === "profile" && <ProfileContent />}
                     {activeTab === "orders" && <OrdersContent />}
-                    {activeTab === "wishlist" && <WishlistContent />} {/* 👈 ID එක update කළා */}
-                    {activeTab === "settings" && <SettingsContent />} {/* 👈 ID එක update කළා */}
+                    {activeTab === "wishlist" && <WishlistContent />}
+                    {activeTab === "settings" && <SettingsContent />}
 
 
                 </section>

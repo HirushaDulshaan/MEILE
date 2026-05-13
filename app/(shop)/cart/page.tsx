@@ -14,7 +14,6 @@ export default function CartPage() {
     const subtotal = cart.items.reduce((acc, item) => acc + item.price * item.qty, 0);
     const delivery = cart.items.length > 0 ? 350 : 0;
 
-    // 2. Cart එක හිස් නම් පෙන්වන UI එක
     if (cart.items.length === 0) {
         return (
             <div className="min-h-[70vh] flex flex-col items-center justify-center space-y-6">
@@ -71,10 +70,8 @@ export default function CartPage() {
                                 </div>
 
                                 <div className="flex justify-between items-center mt-4">
-                                    {/* Qty Controller */}
                                     <div
                                         className="flex items-center gap-4 bg-slate-50 border border-slate-100 px-3 py-2 rounded-xl">
-                                        {/* Qty අඩු වැඩි කරන logic එක පස්සේ Store එකට දාමු, දැනට මේක ලස්සනට තියමු */}
                                         <button
                                             onClick={() => cart.updateQty(item.id, item.size, 'minus')}
                                             className="text-slate-950 hover:text-blue-600 transition-colors "

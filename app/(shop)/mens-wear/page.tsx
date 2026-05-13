@@ -10,7 +10,7 @@ export default function MensProductsPage() {
     const [sizes, setSizes] = useState<any[]>([]);
     const [colors, setColors] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
-    const [isDrawerOpen, setIsDrawerOpen] = useState(false); // Mobile Drawer State
+    const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
     const sectionId = 1;
 
@@ -87,7 +87,6 @@ export default function MensProductsPage() {
                     </div>
 
                     <div className="flex items-center gap-3">
-                        {/* MOBILE FILTER BUTTON - පේන්නේ mobile වලදී විතරයි */}
                         <button
                             onClick={() => setIsDrawerOpen(true)}
                             className="lg:hidden flex items-center gap-2 bg-slate-900 text-white px-5 py-3 rounded-2xl text-xs font-black uppercase tracking-widest shadow-lg active:scale-95 transition-all"
@@ -109,7 +108,6 @@ export default function MensProductsPage() {
 
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
 
-                    {/* FILTER SIDEBAR - Desktop වලදී පේනවා, Mobile වලදී Drawer එකක් වෙනවා */}
                     <aside className={`
                         fixed inset-0 z-[100] bg-black/40 lg:relative lg:inset-auto lg:z-auto lg:bg-transparent lg:col-span-2
                         transition-opacity duration-300

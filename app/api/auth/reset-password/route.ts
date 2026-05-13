@@ -5,7 +5,6 @@ export async function POST(req: Request) {
     try {
         const { email, otp, newPassword } = await req.json();
 
-        // 1. OTP එක නිවැරදිද බලනවා
         const tokenRecord = await db.verificationToken.findFirst({
             where: { email, token: otp }
         });
@@ -14,13 +13,11 @@ export async function POST(req: Request) {
             return new NextResponse("Invalid or expired OTP", { status: 400 });
         }
 
-        // 2. Password එක Update කරනවා
         await db.user.update({
             where: { email },
-            data: { password: newPassword } // 👈 මෙතන bcrypt පාවිච්චි කරනවා නම් hash කරන්න
+            data: { password: newPassword }
         });
 
-        // 3. Token එක අයින් කරනවා
         await db.verificationToken.delete({ where: { email } });
 
         return NextResponse.json({ message: "Password reset successful" });
@@ -34,7 +31,6 @@ export async function PATCH(req: Request) {
     try {
         const { userId, email, otp, newPassword } = await req.json();
 
-        // 1. OTP එක නිවැරදිද බලනවා
         const tokenRecord = await db.verificationToken.findFirst({
             where: { email, token: otp }
         });
@@ -43,13 +39,11 @@ export async function PATCH(req: Request) {
             return new NextResponse("Invalid or expired OTP", { status: 400 });
         }
 
-        // 2. Password එක Update කරනවා
         await db.user.update({
             where: { id: userId },
             data: { password: newPassword }
         });
 
-        // 3. Token එක අයින් කරනවා
         await db.verificationToken.delete({ where: { email } });
 
         return NextResponse.json({ message: "Password updated successfully" });

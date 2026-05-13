@@ -12,9 +12,8 @@ export default function OrdersContent() {
     const [loading, setLoading] = useState(true);
     const [expandedOrder, setExpandedOrder] = useState<number | null>(null);
 
-    // --- Pagination States ---
     const [currentPage, setCurrentPage] = useState(1);
-    const ordersPerPage = 5; // පේජ් එකකට ඕඩර්ස් 5ක් පෙන්වමු
+    const ordersPerPage = 5;
 
     useEffect(() => {
         const fetchOrders = async () => {
@@ -34,7 +33,6 @@ export default function OrdersContent() {
         fetchOrders();
     }, [user?.id]);
 
-    // --- Pagination Logic ---
     const indexOfLastOrder = currentPage * ordersPerPage;
     const indexOfFirstOrder = indexOfLastOrder - ordersPerPage;
     const currentOrders = orders.slice(indexOfFirstOrder, indexOfLastOrder);
@@ -42,12 +40,11 @@ export default function OrdersContent() {
 
     const paginate = (pageNumber: number) => {
         setCurrentPage(pageNumber);
-        setExpandedOrder(null); // පේජ් එක මාරු කරද්දී expand වෙලා තියෙන ඒවා වහමු
-        window.scrollTo({ top: 0, behavior: 'smooth' }); // උඩට scroll කරමු
+        setExpandedOrder(null);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
     const downloadInvoice = (order: any) => {
-        // ... (ඔයාගේ පරණ Invoice logic එකම මෙතන තියන්න)
     };
 
     if (loading) {
@@ -70,10 +67,8 @@ export default function OrdersContent() {
 
             {orders.length > 0 ? (
                 <div className="space-y-4">
-                    {/* දැනට අදාළ පේජ් එකේ ඕඩර්ස් ටික විතරක් මෙතන map කරනවා */}
                     {currentOrders.map((order: any) => (
                         <div key={order.id} className="overflow-hidden border border-slate-100 rounded-[2rem] transition-all duration-300 shadow-sm hover:shadow-md bg-white">
-                            {/* ... (ඔයාගේ පරණ Order Card JSX එකම මෙතන තියන්න) ... */}
                             <div
                                 className={`p-5 flex flex-col md:flex-row items-center gap-6 cursor-pointer transition-colors ${expandedOrder === order.id ? "bg-white" : "bg-slate-50 hover:bg-white"}`}
                                 onClick={() => setExpandedOrder(expandedOrder === order.id ? null : order.id)}
@@ -94,7 +89,6 @@ export default function OrdersContent() {
                                 </div>
                             </div>
 
-                            {/* Expanded Section (අපි කලින් කරපු එකමයි) */}
                             {expandedOrder === order.id && (
                                 <div className="p-8 bg-white border-t border-slate-50 animate-in slide-in-from-top-2 duration-300">
                                     {/* ... (Detailed Info) ... */}

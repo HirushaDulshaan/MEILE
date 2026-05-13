@@ -1,7 +1,6 @@
 import { db } from "@/lib/db";
 import { NextResponse } from "next/server";
 
-// 1. GET: All Colors
 export async function GET() {
     try {
         const colors = await db.color.findMany({
@@ -14,7 +13,6 @@ export async function GET() {
     }
 }
 
-// 2. POST: Create New Color
 export async function POST(req: Request) {
     try {
         const body = await req.json();
@@ -33,7 +31,6 @@ export async function POST(req: Request) {
     }
 }
 
-// 3. PUT: Update Existing Color
 export async function PUT(req: Request) {
     try {
         const body = await req.json();
@@ -42,7 +39,7 @@ export async function PUT(req: Request) {
         if (!id) return new NextResponse("ID Required", { status: 400 });
 
         const updatedColor = await db.color.update({
-            where: { id: Number(id) }, // ID එක Number එකක් බවට පත් කළා
+            where: { id: Number(id) },
             data: {
                 name: color,
                 hexCode: hexColor,

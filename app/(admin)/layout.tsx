@@ -1,4 +1,4 @@
-"use client"; // ✅ usePathname පාවිච්චි කරන්න නම් මේක අනිවාර්යයි
+"use client";
 
 import { usePathname } from "next/navigation";
 import AdminNavbar from "@/components/AdminNavbar";

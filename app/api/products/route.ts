@@ -1,7 +1,6 @@
 import { db } from "@/lib/db";
 import { NextResponse } from "next/server";
 
-// 1. GET: Fetch Products with Optional Filtering
 export async function GET(req: Request) {
     try {
         const { searchParams } = new URL(req.url);
@@ -20,8 +19,7 @@ export async function GET(req: Request) {
             }
         };
 
-        // --- 1. REAL MOST SELLING LOGIC ---
-        // --- 1. REAL MOST SELLING LOGIC ---
+
         if (type === "most-selling") {
             const products = await db.product.findMany({
                 where: {
@@ -36,11 +34,11 @@ export async function GET(req: Request) {
                 orderBy: [
                     {
                         orderItems: {
-                            _count: 'desc' // වැඩිපුරම විකිණෙන ඒවා
+                            _count: 'desc'
                         }
                     },
                     {
-                        isFeatured: 'desc' // ඊට පස්සේ Featured ඒවා
+                        isFeatured: 'desc'
                     }
                 ],
                 take: 5,
@@ -48,7 +46,7 @@ export async function GET(req: Request) {
             return NextResponse.json(products);
         }
 
-        // --- 2. NEW ARRIVALS LOGIC ---
+        //  NEW ARRIVALS LOGIC ---
         if (type === "new-arrivals") {
             const products = await db.product.findMany({
                 where: {
@@ -56,14 +54,13 @@ export async function GET(req: Request) {
                 },
                 include: includeOptions,
                 orderBy: {
-                    createdAt: 'desc' // අලුත්ම ඒවා උඩට
+                    createdAt: 'desc'
                 },
                 take: 5,
             });
             return NextResponse.json(products);
         }
 
-        // --- 3. NORMAL FETCHING ---
         const products = await db.product.findMany({
             where: {
                 ...(sectionId ? { sectionId: Number(sectionId) } : {})
@@ -80,7 +77,6 @@ export async function GET(req: Request) {
     }
 }
 
-// 2. POST: Create New Product
 export async function POST(req: Request) {
     try {
         const body = await req.json();
@@ -109,7 +105,6 @@ export async function POST(req: Request) {
     }
 }
 
-// 3. PUT: Update Existing Product
 export async function PUT(req: Request) {
     try {
         const body = await req.json();
@@ -117,7 +112,6 @@ export async function PUT(req: Request) {
 
         if (!id) return new NextResponse("Product ID required", { status: 400 });
 
-        // Parana images delete karala aluth ewa danna
         await db.productImage.deleteMany({ where: { productId: Number(id) } });
 
         const updatedProduct = await db.product.update({

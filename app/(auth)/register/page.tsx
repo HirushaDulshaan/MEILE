@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react"; // useEffect එකතු කළා
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useUserStore } from "@/app/hooks/use-user-store";
@@ -9,7 +9,7 @@ import { AlertCircle, ArrowLeft, Loader2 } from "lucide-react";
 import toast from "react-hot-toast";
 
 export default function RegisterPage() {
-    const [mounted, setMounted] = useState(false); // 🚀 Hydration Fix සඳහා
+    const [mounted, setMounted] = useState(false);
     const [formData, setFormData] = useState({
         firstName: "", lastName: "", email: "", contact: "", password: ""
     });
@@ -22,7 +22,6 @@ export default function RegisterPage() {
     const setUser = useUserStore((state) => state.setUser);
     const router = useRouter();
 
-    // 🚀 Component එක බ්‍රවුසර් එකේ load වුණාම විතරක් පෙන්වන්න
     useEffect(() => {
         setMounted(true);
     }, []);
@@ -97,7 +96,6 @@ export default function RegisterPage() {
         ) : null
     );
 
-    // 🚀 Hydration mismatch එක සම්පූර්ණයෙන්ම නවත්වන තැන
     if (!mounted) return null;
 
     return (

@@ -37,12 +37,12 @@ model Order {
   items          OrderItem[]
   totalAmount    Float
   status         String      @default("Processing") // Processing, Shipped, Delivered, Cancelled
-  address        String      // ඕඩර් එක යවන්න ඕනේ ඇඩ්‍රස් එක
-  contact        String      // කන්ටැක්ට් නම්බර් එක
+  address        String
+  contact        String
   billingAddress  String?
   createdAt      DateTime    @default(now())
   updatedAt      DateTime    @updatedAt
-  stripeSessionId  String?     @unique // 👈 මේ පේළිය තියෙන්නම ඕනේ
+  stripeSessionId  String?     @unique
 }
 
 model OrderItem {
@@ -73,7 +73,7 @@ model Category {
   id        Int       @id @default(autoincrement())
   name      String
   section   Section   @relation(fields: [sectionId], references: [id])
-  sectionId Int       // String thibbe, Int kala
+  sectionId Int
   products  Product[]
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
@@ -91,9 +91,9 @@ model Product {
 
   // Relationships
   category    Category       @relation(fields: [categoryId], references: [id])
-  categoryId  Int            // String thibbe, Int kala
+  categoryId  Int
   section     Section        @relation(fields: [sectionId], references: [id])
-  sectionId   Int            // String thibbe, Int kala
+  sectionId   Int
 
   // One-to-Many: Images
   images      ProductImage[]
@@ -112,7 +112,7 @@ model ProductImage {
   id        Int      @id @default(autoincrement())
   url       String
   product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
-  productId Int      // String thibbe, Int kala
+  productId Int
 }
 
 // --- Attributes ---
@@ -139,10 +139,10 @@ model Stock {
   id        Int      @id @default(autoincrement())
   productId Int
   product   Product  @relation(fields: [productId], references: [id])
-  sizeId    Int      // String thibbe, Int kala
+  sizeId    Int
   size      Size     @relation(fields: [sizeId], references: [id])
   qty       Int      @default(0)
-  status    String   // e.g., "Active", "Out of Stock", "Low Stock"
+  status    String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

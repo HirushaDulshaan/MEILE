@@ -9,21 +9,19 @@ export default function AdminLoginPage() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [loading, setLoading] = useState(false);
-    const [errors, setErrors] = useState<any>({}); // Validation errors තියාගන්න
+    const [errors, setErrors] = useState<any>({});
     const router = useRouter();
 
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
-        setErrors({}); // පරණ errors clear කරන්න
+        setErrors({});
 
-        // 1. Client-side Validation using Zod
         const validation = adminLoginSchema.safeParse({ email, password });
 
         if (!validation.success) {
-            // Validation fail නම් errors ටික state එකට දානවා
             const formattedErrors = validation.error.flatten().fieldErrors;
             setErrors(formattedErrors);
-            return; // API එකට යන එක නවත්තනවා
+            return;
         }
 
         setLoading(true);
@@ -38,7 +36,6 @@ export default function AdminLoginPage() {
                 router.push("/dashboard");
             } else {
                 const errorData = await res.json();
-                // API එකෙන් එන errors (උදා: Invalid credentials) alert එකක් විදිහට පෙන්වනවා
                 alert(errorData.message || "Login Failed! Please check your admin credentials.");
             }
         } catch (error) {

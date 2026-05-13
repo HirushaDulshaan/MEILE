@@ -29,11 +29,10 @@ export default function SearchBar() {
             }
         };
 
-        const timeoutId = setTimeout(fetchResults, 300); // Debounce: typing ඉවර වෙලා පොඩි වෙලාවකින් fetch කරනවා
+        const timeoutId = setTimeout(fetchResults, 300);
         return () => clearTimeout(timeoutId);
     }, [query]);
 
-    // SearchBar.tsx ඇතුළේ Dropdown එක තියෙන තැන මේ විදිහට වෙනස් කරන්න
 
     return (
         <div className="relative w-full max-w-md">

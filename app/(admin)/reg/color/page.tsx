@@ -4,7 +4,7 @@ import { Paintbrush, Hash, Save, Edit, RotateCcw, Palette, Loader2 } from "lucid
 
 export default function SaveColor() {
     const [formData, setFormData] = useState({
-        id: null as number | null, // ID එක Number බවට පත් කළා
+        id: null as number | null,
         color: "",
         hexColor: "#3b82f6",
     });

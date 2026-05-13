@@ -13,7 +13,6 @@ export async function POST(req: Request) {
 
         const stock = await db.stock.upsert({
             where: {
-                // @@unique([productId, sizeId]) nisa mehema filter karanna puluwan
                 productId_sizeId: {
                     productId: productId,
                     sizeId: sizeId,

@@ -134,12 +134,11 @@ export default function AllProductsPage() {
                     </div>
                 </div>
 
-                {/* ✅ IMPROVED PRODUCT DETAILS MODAL ✅ */}
+                {/*  IMPROVED PRODUCT DETAILS MODAL */}
                 {selectedProduct && (
                     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-300">
                         <div className="bg-white w-full max-w-4xl max-h-[90vh] rounded-[3rem] shadow-2xl overflow-hidden flex flex-col md:flex-row relative animate-in zoom-in-95 duration-300">
 
-                            {/* Close Button */}
                             <button onClick={() => setSelectedProduct(null)} className="absolute top-6 right-6 z-10 p-2 bg-white/80 backdrop-blur-md rounded-full hover:bg-rose-100 hover:text-rose-600 transition-all shadow-sm">
                                 <XCircle size={24} />
                             </button>
@@ -152,7 +151,6 @@ export default function AllProductsPage() {
                             {/* Right: Detailed Content Section */}
                             <div className="md:w-1/2 p-10 overflow-y-auto custom-scrollbar">
                                 <div className="space-y-6">
-                                    {/* Header */}
                                     <div>
                                         <div className="flex items-center gap-2 mb-2">
                                             <span className="bg-blue-50 text-blue-600 text-[9px] font-black px-3 py-1 rounded-full uppercase tracking-widest">{selectedProduct.section.name}</span>
@@ -162,7 +160,6 @@ export default function AllProductsPage() {
                                         <p className="text-2xl font-bold text-slate-900 mt-3">LKR {selectedProduct.price.toLocaleString()}</p>
                                     </div>
 
-                                    {/* Description ✅ */}
                                     <div className="space-y-2">
                                         <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
                                             <Info size={14} /> Description
@@ -172,7 +169,6 @@ export default function AllProductsPage() {
                                         </p>
                                     </div>
 
-                                    {/* Colors ✅ */}
                                     <div className="space-y-3">
                                         <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
                                             <Palette size={14} /> Available Colors
@@ -187,7 +183,6 @@ export default function AllProductsPage() {
                                         </div>
                                     </div>
 
-                                    {/* Stock Levels */}
                                     <div className="space-y-3 pt-4 border-t border-slate-100">
                                         <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
                                             <Database size={14} /> Stock Levels

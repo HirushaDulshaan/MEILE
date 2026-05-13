@@ -10,7 +10,7 @@ export default function WishlistContent() {
 
     // --- Pagination States ---
     const [currentPage, setCurrentPage] = useState(1);
-    const itemsPerPage = 5; // පේජ් එකකට අයිටම් 5ක් පෙන්වමු
+    const itemsPerPage = 5;
 
     if (!wishlist) {
         return (
@@ -131,7 +131,6 @@ export default function WishlistContent() {
                     )}
                 </div>
             ) : (
-                /* Empty State (ඔයාගේ පරණ එකමයි) */
                 <div className="flex flex-col items-center justify-center py-20 text-center bg-slate-50/50 rounded-[3rem] border-2 border-dashed border-slate-100">
                     <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center shadow-sm mb-6">
                         <Heart size={32} className="text-slate-200" />

@@ -21,7 +21,6 @@ export default function ProductCard({ data, index = 0 }: ProductCardProps) {
     const wishlist = useWishlist();
     const mainImage = data.images[0]?.url || "/placeholder.jpg";
 
-    // ✅ දැනටමත් Wishlist එකේ තියෙනවද බලන්න
     const isWishlisted = wishlist.items.some((item) => item.id === data.id);
 
     const onWishlistClick = (e: React.MouseEvent) => {
@@ -56,7 +55,7 @@ export default function ProductCard({ data, index = 0 }: ProductCardProps) {
                             className="object-cover object-center transition-transform duration-700 group-hover:scale-110"
                         />
 
-                        {/* ✅ Heart Button with Dynamic Color */}
+                        {/*  Heart Button with Dynamic Color */}
                         <div className="absolute top-4 right-4 opacity-0 transform translate-x-4 transition-all duration-300 group-hover:opacity-100 group-hover:translate-x-0">
                             <button
                                 onClick={onWishlistClick}

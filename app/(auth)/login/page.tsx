@@ -14,7 +14,6 @@ export default function LoginPage() {
     const [errors, setErrors] = useState<any>({});
 
     useEffect(() => {
-        // පාස්වර්ඩ් එක රීසෙට් කරලා ආවා නම් මැසේජ් එකක් පෙන්වමු
         const resetSuccess = sessionStorage.getItem("passwordResetSuccess");
         if (resetSuccess) {
             toast.success("Password reset successful! Please login with your new password.", {
@@ -51,10 +50,8 @@ export default function LoginPage() {
                 const userData = await response.json();
                 setUser(userData);
 
-                // ✅ Toast home page එකේදී show කරන්න flag set කරනවා
                 sessionStorage.setItem("loginSuccess", userData.firstName);
 
-                // Delay නැතිව direct navigate
                 router.push("/dees");
 
             } else {
@@ -141,7 +138,6 @@ export default function LoginPage() {
                     </div>
 
                     <div className="flex justify-end mt-4">
-                        {/* ✅ මෙතන ලින්ක් එක /forgot-password වලට මාරු කරන්න */}
                         <Link href="/forgot-password" className="text-[10px] font-black text-blue-600 uppercase tracking-widest hover:underline">
                             Forgot Password?
                         </Link>

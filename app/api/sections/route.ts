@@ -5,7 +5,7 @@ import { NextResponse } from "next/server";
 export async function GET() {
     try {
         const sections = await db.section.findMany({
-            orderBy: { id: 'asc' } // Integer nisa 1, 2, 3 widiyata ena eka hondayi
+            orderBy: { id: 'asc' }
         });
         return NextResponse.json(sections);
     } catch (err) {
@@ -38,7 +38,7 @@ export async function PUT(req: Request) {
         if (!id) return new NextResponse("ID Required", { status: 400 });
 
         const updatedSection = await db.section.update({
-            where: { id: Number(id) }, // ID eka Number ekak kala
+            where: { id: Number(id) },
             data: { name: sectionName },
         });
         return NextResponse.json(updatedSection);

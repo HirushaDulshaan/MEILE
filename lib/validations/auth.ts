@@ -4,7 +4,7 @@ export const registerSchema = z.object({
     firstName: z.string().min(2, "First name must be at least 2 characters"),
     lastName: z.string().min(2, "Last name must be at least 2 characters"),
 
-    // ✅ Email Regex Update
+    //  Email Regex Update
     email: z.string()
         .min(1, "Email is required")
         .regex(
@@ -12,7 +12,6 @@ export const registerSchema = z.object({
             "Please enter a valid email address (e.g., name@example.com)"
         ),
 
-    // ✅ Contact Regex Update (ලංකාවේ 07X සහ +947X වලට ගැළපෙන ලෙස)
     contact: z.string()
         .regex(/^(?:\+94|0)7[0-9]{8}$/, "Invalid Sri Lankan contact number"),
 
@@ -36,8 +35,8 @@ export const profileSchema = z.object({
     city: z.string().min(2, "City is required"),
     postalCode: z.string()
         .min(1, "Postal code is required")
-        .regex(/^[0-9]+$/, "Postal code must contain only numbers") // 👈 ඉලක්කම් විතරයි
-        .length(5, "Sri Lankan postal code must be exactly 5 digits"), // 👈 ලංකාවේ නම් 5ක්ම ඕනේ
+        .regex(/^[0-9]+$/, "Postal code must contain only numbers")
+        .length(5, "Sri Lankan postal code must be exactly 5 digits"),
 });
 export const checkoutSchema = z.object({
     firstName: z.string().min(2, "First name is too short"),

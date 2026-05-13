@@ -13,7 +13,7 @@ export async function GET() {
                 role: true,
                 createdAt: true,
                 _count: {
-                    select: { orders: true } // යූසර් කරපු ඕඩර්ස් ගණන
+                    select: { orders: true }
                 }
             },
             orderBy: {

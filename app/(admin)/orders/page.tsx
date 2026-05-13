@@ -13,7 +13,7 @@ import {
     Phone,
     ChevronLeft,
     ChevronRight,
-    ReceiptText // ✅ අයිකන් එක මෙතනට එකතු කළා
+    ReceiptText
 } from "lucide-react";
 
 export default function AdminOrdersPage() {
@@ -22,7 +22,6 @@ export default function AdminOrdersPage() {
     const [searchTerm, setSearchTerm] = useState("");
     const [selectedOrder, setSelectedOrder] = useState<any>(null);
 
-    // Pagination States
     const [currentPage, setCurrentPage] = useState(1);
     const ordersPerPage = 10;
 

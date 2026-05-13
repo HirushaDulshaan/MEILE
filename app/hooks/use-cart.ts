@@ -31,7 +31,6 @@ export const useCart = create<CartStore>()(
                 );
 
                 if (existingItem) {
-                    // ❌ Alert වෙනුවට Toast එකක් දාමු
                     return toast.error("This item is already in your cart! 🛒", {
                         style: {
                             borderRadius: '10px',
@@ -61,7 +60,6 @@ export const useCart = create<CartStore>()(
                 const updatedItems = currentItems.map((item) => {
                     if (item.id === id && item.size === size) {
                         const newQty = action === 'plus' ? item.qty + 1 : item.qty - 1;
-                        // Qty එක 1ට වඩා අඩු වෙන්න දෙන්න එපා
                         return { ...item, qty: newQty < 1 ? 1 : newQty };
                     }
                     return item;

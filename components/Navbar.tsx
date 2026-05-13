@@ -27,7 +27,6 @@ const Navbar = () => {
             <nav className="bg-black px-6 py-5 shadow-md uppercase tracking-widest text-white relative z-50 border-b border-white/5">
                 <div className="max-w-7xl mx-auto flex justify-between items-center">
 
-                    {/* MOBILE MENU BUTTON */}
                     <button
                         className="md:hidden p-1 hover:text-blue-500 transition"
                         onClick={() => setIsMenuOpen(true)}
@@ -95,11 +94,9 @@ const Navbar = () => {
                 )}
             </nav>
 
-            {/* ✅ FULL SCREEN MOBILE DRAWER */}
-            {/* ✅ FULL SCREEN MOBILE DRAWER */}
+
             {isMenuOpen && (
                 <div className="fixed inset-0 bg-black z-[110] md:hidden flex flex-col animate-in slide-in-from-left duration-300">
-                    {/* Header - මෙහි blur හෝ අමතර අඳුරු ගතියක් නැත */}
                     <div className="flex justify-between items-center px-6 py-5 border-b border-white/10">
                         <button onClick={() => setIsMenuOpen(false)} className="p-1 text-white">
                             <X size={26} />

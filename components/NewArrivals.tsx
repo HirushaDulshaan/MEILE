@@ -14,7 +14,6 @@ export default function NewArrivals() {
             try {
                 const res = await fetch("/api/products");
                 const data = await res.json();
-                // ✅ දැන් ප්‍රොඩක්ට් 5ක් පෙන්වන නිසා slice(0, 5) කරමු
                 setProducts(data.slice(0, 5));
             } catch (error) {
                 console.error("Failed to fetch products:", error);
@@ -32,7 +31,6 @@ export default function NewArrivals() {
     );
 
     return (
-        /* ✅ Container එක 7xl වෙනුවට 1440px වගේ ටිකක් වැඩි කළා margin අඩු වෙන්න */
         <section className="max-w-[1440px] mx-auto px-6 py-16 lg:py-24">
             {/* Header Section */}
             <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6 px-2">
@@ -60,7 +58,6 @@ export default function NewArrivals() {
                 </Link>
             </div>
 
-            {/* ✅ Products Grid - පේළියට 5ක් වැටෙන විදිහට හදා ඇත */}
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5">
                 {products.map((product, index) => (
                     <ProductCard key={product.id} data={product} index={index} />

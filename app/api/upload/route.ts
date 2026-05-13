@@ -10,7 +10,6 @@ export async function POST(req: Request) {
         const fileName = `img-${Date.now()}-${Math.random().toString(36).substring(7)}.png`;
         const uploadDir = path.join(process.cwd(), "public/uploads");
 
-        // Folder eka nathnam hadanna
         try { await mkdir(uploadDir, { recursive: true }); } catch (e) {}
 
         await writeFile(path.join(uploadDir, fileName), buffer);

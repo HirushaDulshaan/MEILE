@@ -6,14 +6,14 @@ import toast from "react-hot-toast";
 import { Loader2, ArrowLeft, KeyRound } from "lucide-react";
 
 export default function ForgotPassword() {
-    const [step, setStep] = useState(1); // 1: Email, 2: OTP, 3: New Password
+    const [step, setStep] = useState(1);
     const [loading, setLoading] = useState(false);
     const [email, setEmail] = useState("");
     const [otp, setOtp] = useState("");
     const [newPassword, setNewPassword] = useState("");
     const router = useRouter();
 
-    // Step 1: Send OTP
+    //  Send OTP
     const handleSendOTP = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
@@ -27,7 +27,7 @@ export default function ForgotPassword() {
         } finally { setLoading(false); }
     };
 
-    // Step 2 & 3: Reset Password
+    //  Reset Password
     const handleResetPassword = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);

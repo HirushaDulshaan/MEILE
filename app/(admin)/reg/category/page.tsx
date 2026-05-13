@@ -4,7 +4,7 @@ import { LayoutGrid, Save, Edit, RotateCcw, Loader2 } from "lucide-react";
 
 export default function CategoryManagement() {
     const [formData, setFormData] = useState({
-        id: null as number | null, // Dan ID eka number
+        id: null as number | null,
         categoryName: "",
         sectionId: "",
     });
@@ -70,7 +70,7 @@ export default function CategoryManagement() {
         setFormData({
             id: item.id,
             categoryName: item.name,
-            sectionId: item.sectionId.toString(), // Select dropdown ekata String conversion ona
+            sectionId: item.sectionId.toString(),
         });
     };
 

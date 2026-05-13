@@ -3,7 +3,7 @@ import Stripe from "stripe";
 import { NextResponse } from "next/server";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-    apiVersion: "2026-03-25.dahlia", // Stripe version එක ඔයාගේ env එකට ගැලපෙන ලෙස තියන්න
+    apiVersion: "2026-03-25.dahlia",
 });
 
 export async function GET(req: Request) {
@@ -13,7 +13,6 @@ export async function GET(req: Request) {
     if (!sessionId) return new NextResponse("Missing Session ID", { status: 400 });
 
     try {
-        // 1. කලින් ඕඩර් එකක් මේ ID එකෙන් තියෙනවද බලමු (Duplicate වළක්වන්න)
         const existingOrder = await db.order.findUnique({
             where: { stripeSessionId: sessionId },
             include: { items: true }
@@ -21,7 +20,6 @@ export async function GET(req: Request) {
 
         if (existingOrder) return NextResponse.json(existingOrder);
 
-        // 2. Stripe Session එක ගන්නවා
         const session = await stripe.checkout.sessions.retrieve(sessionId, {
             expand: ['line_items.data.price.product'],
         });
@@ -35,10 +33,8 @@ export async function GET(req: Request) {
 
         if (!userId || isNaN(parsedUserId)) return new NextResponse("Invalid User ID", { status: 400 });
 
-        // 🚀 Transaction පටන් ගන්නවා (tx: any ලෙස Fix කර ඇත)
         const order = await db.$transaction(async (tx: any) => {
 
-            // ඕඩර් එක ක්‍රියේට් කිරීම
             const newOrder = await tx.order.create({
                 data: {
                     stripeSessionId: sessionId,
@@ -64,7 +60,6 @@ export async function GET(req: Request) {
                 include: { items: true }
             });
 
-            // 📦 ස්ටොක් අප්ඩේට් කිරීම
             for (const item of session.line_items?.data || []) {
                 const productMetadata = (item.price?.product as Stripe.Product).metadata;
 
@@ -85,7 +80,7 @@ export async function GET(req: Request) {
                                 qty: { decrement: orderQty }
                             }
                         });
-                        console.log(`✅ Stock updated: Product ${pId}, Size ${sId}`);
+                        console.log(`Stock updated: Product ${pId}, Size ${sId}`);
                     }
                 }
             }
