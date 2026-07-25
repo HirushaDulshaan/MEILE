@@ -31,20 +31,47 @@ export const useCart = create<CartStore>()(
                 );
 
                 if (existingItem) {
-                    return toast.error("This item is already in your cart! 🛒", {
+                    return toast.error("Item already in your shopping bag!", {
+                        duration: 3000,
                         style: {
-                            borderRadius: '10px',
-                            background: '#333',
+                            borderRadius: '100px',
+                            background: '#0f172a', // Premium Slate-900 Dark
                             color: '#fff',
-                            fontSize: '12px'
-                        }
+                            fontSize: '12px',
+                            fontWeight: 'bold',
+                            textTransform: 'uppercase',
+                            letterSpacing: '0.05em',
+                            padding: '12px 20px',
+                            border: '1px solid #334155',
+                            boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)'
+                        },
+                        iconTheme: {
+                            primary: '#ef4444', // Red Cross Icon
+                            secondary: '#0f172a',
+                        },
                     });
                 }
 
                 set({ items: [...get().items, data] });
-                toast.success(`${data.name} added to cart! 🚀`, {
+
+                toast.success(`Added ${data.name.substring(0, 15)}... to bag`, {
                     duration: 3000,
-                    icon: '🛍️',
+                    style: {
+                        borderRadius: '100px',
+                        background: '#0f172a', // Premium Slate-900 Dark
+                        color: '#fff',
+                        fontSize: '12px',
+                        fontWeight: 'bold',
+                        textTransform: 'uppercase',
+                        letterSpacing: '0.05em',
+                        padding: '12px 20px',
+                        border: '1px solid #334155',
+                        boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)'
+                    },
+                    iconTheme: {
+                        primary: '#22c55e', // Vibrant Green Checkmark
+                        secondary: '#0f172a',
+                    },
                 });
             },
             removeItem: (id: number, size: string) => {
@@ -53,7 +80,24 @@ export const useCart = create<CartStore>()(
                         (item) => !(item.id === id && item.size === size)
                     ),
                 });
-                toast.success("Item removed from cart");
+                toast.success("Item removed from bag", {
+                    duration: 2500,
+                    style: {
+                        borderRadius: '100px',
+                        background: '#0f172a',
+                        color: '#fff',
+                        fontSize: '12px',
+                        fontWeight: 'bold',
+                        textTransform: 'uppercase',
+                        letterSpacing: '0.05em',
+                        padding: '12px 20px',
+                        border: '1px solid #334155',
+                    },
+                    iconTheme: {
+                        primary: '#3b82f6', // Blue Icon for Removal
+                        secondary: '#0f172a',
+                    },
+                });
             },
             updateQty: (id: number, size: string, action: 'plus' | 'minus') => {
                 const currentItems = get().items;
