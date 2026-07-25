@@ -19,7 +19,7 @@ export default function AIChatBubble() {
     const [message, setMessage] = useState("");
 
     const [chatLog, setChatLog] = useState<{ role: "bot" | "user"; text: string }[]>([
-        { role: "bot", text: "Hello! Welcome to SmartStyle AI Support. How can I help you today?" },
+        { role: "bot", text: "Hello! Welcome to MEILI AI Support. How can I help you today?" },
     ]);
     const [loading, setLoading] = useState(false);
 
@@ -148,7 +148,7 @@ export default function AIChatBubble() {
                                 <Bot className="w-5 h-5 text-emerald-400" />
                                 <div>
                                     <h3 className="font-bold text-sm flex items-center gap-1.5">
-                                        SmartStyle AI Assistant
+                                        MEILI AI Assistant
                                         <GripHorizontal className="w-4 h-4 text-gray-400" />
                                     </h3>
                                     <p className="text-[10px] text-gray-400">Online • Powered by Gemini</p>
