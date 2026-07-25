@@ -29,10 +29,17 @@ export default function AIChatBubble() {
         let userMsg = message.trim();
         let displayUserMessage = userMsg;
 
-        // 🔒 ORDER_QUERY Input Validation & Custom Chat Message Display
+        // 🔒 ORDER_QUERY Input Validation Check (No Browser Alert!)
         if (intent === "ORDER_QUERY") {
             if (!orderId.trim() || !firstName.trim() || !lastName.trim()) {
-                alert("Please provide Order ID, First Name, and Last Name for security verification.");
+                // Inline bot response for missing details
+                setChatLog((prev) => [
+                    ...prev,
+                    {
+                        role: "bot",
+                        text: "⚠️ Security Verification Required: Please enter your Order ID, First Name, and Last Name below before proceeding.",
+                    },
+                ]);
                 return;
             }
             displayUserMessage = `Checking Order #${orderId.replace("#", "")} for ${firstName} ${lastName}`;
@@ -181,7 +188,7 @@ export default function AIChatBubble() {
                                 </div>
                             ))}
 
-                            {/* ⚡ ENHANCED LOADING UI (With Cold-Start Helper Note) */}
+                            {/* ⚡ ENHANCED LOADING UI */}
                             {loading && (
                                 <div className="flex justify-start">
                                     <div className="bg-white p-3 rounded-2xl border border-gray-200 shadow-sm flex items-center gap-2 text-xs text-gray-600 max-w-[85%] animate-pulse">
@@ -254,6 +261,12 @@ export default function AIChatBubble() {
                                             onChange={(e) => setOrderId(e.target.value)}
                                             className="w-full p-2 border rounded-lg text-xs outline-none focus:ring-1 focus:ring-black"
                                         />
+                                        {/* 🔴 Inline Warning Note */}
+                                        {(!orderId.trim() || !firstName.trim() || !lastName.trim()) && (
+                                            <p className="text-[10px] text-rose-500 font-medium px-0.5">
+                                                * Fill required fields (*) to verify.
+                                            </p>
+                                        )}
                                     </div>
                                 )}
 
