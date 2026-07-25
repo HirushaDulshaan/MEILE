@@ -1,143 +1,159 @@
-# MEILE — SmartStyle Fashion Platform
+# 🛍️ MEILI — SmartStyle Fashion & AI-Powered E-Commerce Platform
 
-> High-End Fashion Retail with Serverless Scalability
+> High-End Fashion Retail with Microservices Architecture & Gemini AI Support Engine.
 
 [![Live Demo](https://img.shields.io/badge/Live%20Demo-Visit%20Site-black?style=for-the-badge)](https://meile-fashion.vercel.app/dees)
 [![Next.js](https://img.shields.io/badge/Next.js%2015-black?style=for-the-badge&logo=next.js)](https://nextjs.org/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
+[![Gemini AI](https://img.shields.io/badge/Google%20Gemini%20AI-8E75B2?style=for-the-badge&logo=google&logoColor=white)](https://ai.google.dev/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-336791?style=for-the-badge&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
 [![Vercel](https://img.shields.io/badge/Deployed%20on-Vercel-black?style=for-the-badge&logo=vercel)](https://vercel.com/)
+[![Render](https://img.shields.io/badge/AI%20Engine%20on-Render-46E3B7?style=for-the-badge&logo=render&logoColor=black)](https://render.com/)
 
 ---
 
-## Overview
+## 🌟 Overview
 
-**MEILE** is a full-stack, serverless M-Commerce platform engineered for high-traffic fashion retail. Built on **Next.js 15** with a **PostgreSQL (Neon)** backend and **Prisma Transactions**, it ensures data integrity during flash sales and global traffic spikes delivering a seamless, premium shopping experience at scale.
+**MEILI (SmartStyle)** is a modern, high-performance M-Commerce platform engineered for high-traffic fashion retail. Built with a **Decoupled Microservices Architecture**, it combines a ultra-responsive **Next.js 15** frontend with an autonomous **Python FastAPI AI Agent Engine** powered by **Google Gemini AI**. 
 
----
-
-## Features
-
-- 🛍️ **Full M-Commerce Flow** — Product browsing, cart management, and checkout
-- 💳 **Stripe Payment Integration** — Secure, real world payment processing
-- 🔐 **JWT Authentication** — Stateless, secure user sessions
-- ⚡ **Serverless Architecture** — Scales automatically with demand via Vercel
-- 🗃️ **Prisma Transactions** — ACID-compliant transactions for order and inventory integrity
-- 🌐 **Neon DB (PostgreSQL)** — Serverless Postgres with instant branching
-- 🧠 **Zustand State Management** — Lightweight, scalable client side state
+It uses **Neon PostgreSQL** with **ACID Prisma Transactions** to guarantee zero data inconsistency during flash sales, while serving real-time AI customer assistance, complaint ticketing, and interactive order tracking.
 
 ---
 
-## Tech Stack
+## 🔥 Key Features
 
-| Layer        | Technology                              |
-|-------------|------------------------------------------|
-| **Frontend** | Next.js 15, TypeScript, Tailwind CSS    |
-| **State**    | Zustand                                 |
-| **Backend**  | Next.js API Routes (Serverless)         |
-| **Auth**     | JWT                                     |
-| **Database** | PostgreSQL (Neon DB)                    |
-| **ORM**      | Prisma                                  |
-| **Payments** | Stripe                                  |
-| **Deploy**   | Vercel                                  |
+- 🤖 **Autonomous AI Customer Agent (Gemini AI)** — Intelligent order verification, automated complaint ticketing, and product inquiry assistance.
+- 🛍️ **Full M-Commerce Shopping Flow** — Dynamic product catalog, interactive size filters, and animated drag-and-drop cart management.
+- 📊 **Real-time Admin Analytics Dashboard** — Interactive revenue growth charts powered by **Recharts** and live store highlights.
+- 💳 **Stripe Payment Integration** — Secure, PCI-compliant checkout workflow.
+- 🔐 **JWT & Role-Based Security** — Stateless user sessions with administrative security controls.
+- 🗃️ **Serverless PostgreSQL (Neon DB)** — Instant database branching with Prisma ORM for resilient data transactions.
+- 🎨 **Modern Interactive UI/UX** — Framer Motion smooth page transitions, draggable floating chat widget, and responsive layout.
 
 ---
 
-## Architecture
+## 🛠️ Tech Stack
 
+| Layer | Technology |
+| :--- | :--- |
+| **Frontend Platform** | Next.js 15 (App Router), TypeScript, Tailwind CSS |
+| **UI & Animations** | Framer Motion, Lucide Icons, Recharts |
+| **State Management** | Zustand |
+| **Main E-Commerce Backend** | Next.js Serverless API Routes |
+| **AI Support Microservice** | Python 3.12, FastAPI, Uvicorn, Pydantic |
+| **LLM & AI Engine** | Google Gemini Generative AI API |
+| **Database & ORM** | PostgreSQL (Neon DB), Prisma ORM & SQLAlchemy |
+| **Payments** | Stripe API |
+| **Deployments** | **Frontend:** Vercel \| **AI Engine:** Render.com |
+
+---
+
+## 🏗️ System Architecture
+
+```text
+               ┌──────────────────────────────────────────────┐
+               │         Client Interface (Browser)           │
+               │        Next.js 15 / TypeScript / React       │
+               └──────────────────────┬───────────────────────┘
+                                      │
+            ┌─────────────────────────┴─────────────────────────┐
+            │                                                   │
+            ▼                                                   ▼
+┌──────────────────────┐                             ┌──────────────────────┐
+│ Next.js API Routes   │                             │ Python FastAPI Service│
+│ (E-Commerce Backend) │                             │ (AI Support Engine)  │
+└───────────┬──────────┘                             └──────────┬───────────┘
+            │                                                   │
+            │ (Prisma ORM)                                      │ (Gemini API / SQLAlchemy)
+            ▼                                                   ▼
+┌──────────────────────┐                             ┌──────────────────────┐
+│ Neon PostgreSQL DB   │ ◄───────────────────────────┤ Google Gemini AI     │
+│ (Orders/Users/Items) │     (Order Verification)    │ (Intent Processing)  │
+└──────────────────────┘                             └──────────────────────┘
 ```
-Client (Next.js 15 / TypeScript)
-        │
-        ▼
-  Next.js API Routes  ──── JWT Auth
-        │
-        ▼
-   Prisma ORM
-        │
-        ▼
-  PostgreSQL (Neon DB)
-        │
-   ACID Transactions
-   (Cart / Orders / Payments)
-```
+## ⚡ Microservices Breakdown
+
+### 1. Main E-Commerce Web Service (`/`)
+* **Framework:** Next.js 15 (React 19 / TypeScript)
+* **Hosting:** Vercel
+* **Function:** Storefront UI, Zustand Cart, Checkout, User Authentication, Admin Dashboard, Recharts Visuals.
+
+### 2. AI Support Agent Service (`meili-ai-support-service`)
+* **Framework:** Python 3.12 + FastAPI
+* **Hosting:** Render ([https://meili-ai-support-service.onrender.com](https://meili-ai-support-service.onrender.com))
+* **Function:** Natural Language Intent Analysis, Automated Order Status Verification, AI Complaint Ticket Creation.
 
 ---
 
-## Getting Started
+## 🚀 Getting Started
 
 ### Prerequisites
 
-- Node.js 18+
-- PostgreSQL database (or [Neon DB](https://neon.tech/) account)
-- Stripe account for payment processing
+* Node.js 18+
+* Python 3.12+
+* Neon PostgreSQL Database Account
+* Google Gemini API Key
+* Stripe Account
 
-### Installation
+---
+
+### 1. Main Next.js App Setup
 
 ```bash
 # Clone the repository
-git clone https://github.com/HirushaDulshaan/MEILE.git
+git clone [https://github.com/HirushaDulshaan/MEILE.git](https://github.com/HirushaDulshaan/MEILE.git)
 cd MEILE
 
-# Install dependencies
+# Install Node dependencies
 npm install
-```
 
-### Environment Variables
+# Setup Environment Variables (.env)
+DATABASE_URL="postgresql://..."
+JWT_SECRET="your_jwt_secret"
+STRIPE_SECRET_KEY="sk_test_..."
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY="pk_test_..."
 
-Create a `.env` file in the root directory:
-
-```env
-# Database
-DATABASE_URL=your_neon_postgresql_connection_string
-
-# Auth
-JWT_SECRET=your_jwt_secret_key
-
-# Stripe
-STRIPE_SECRET_KEY=your_stripe_secret_key
-NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=your_stripe_publishable_key
-
-# App
-NEXTAUTH_URL=http://localhost:3000
-```
-
-### Database Setup
-
-```bash
-# Run Prisma migrations
+# Run Database Migrations
 npx prisma migrate dev
 
-# Seed the database (if applicable)
-npx prisma db seed
-```
-
-### Run Locally
-
-```bash
+# Run Next.js Development Server
 npm run dev
 ```
+### 2. Python AI Engine Microservice Setup
 
-Open [http://localhost:3000](http://localhost:3000) in your browser.
+```bash
+cd meili-ai-support-service
+
+# Install Python Dependencies
+pip install -r requirements.txt
+
+# Setup Environment Variables (.env)
+GEMINI_API_KEY="your_gemini_api_key"
+DATABASE_URL="your_neon_db_url"
+FRONTEND_URL="http://localhost:3000"
+
+# Run FastAPI Server locally
+uvicorn main:app --reload --port 8000
+```
+## 🌐 Live Microservice Links
+
+* 🛍️ **Live Application:** [meile-fashion.vercel.app/dees](https://meile-fashion.vercel.app/dees)
+* ⚡ **Live AI Service Health Check:** [meili-ai-support-service.onrender.com](https://meili-ai-support-service.onrender.com)
 
 ---
 
-## Live Demo
+## 👤 Author
 
-🔗 [meile-fashion.vercel.app/dees](https://meile-fashion.vercel.app/dees)
+**Hirusha Dulshan** — Fullstack Software Engineer
 
----
-
-## Author
-
-**Hirusha Dulshan** — Fullstack Engineer
-
-- 🌐 Portfolio: [hirushadulshan.me](https://hirushadulshan.me)
-- 💼 LinkedIn: [linkedin.com/in/hirusha-dulshan](https://www.linkedin.com/in/hirusha-dulshan/)
-- 🐙 GitHub: [github.com/HirushaDulshaan](https://github.com/HirushaDulshaan)
-- 📧 Email: hirushadulshaan@gmail.com
+* 🌐 **Portfolio:** [hirushadulshan.me](https://hirushadulshan.me)
+* 💼 **LinkedIn:** [linkedin.com/in/hirusha-dulshan](https://www.linkedin.com/in/hirusha-dulshan/)
+* 🐙 **GitHub:** [github.com/HirushaDulshaan](https://github.com/HirushaDulshaan)
+* 📧 **Email:** hirushadulshaan@gmail.com
 
 ---
 
-## License
+## 📄 License
 
-This project is open source and available under the [MIT License](LICENSE).
+This project is open-source and available under the [MIT License](LICENSE).
